@@ -1,14 +1,10 @@
-# Build output
 build/
 
-# Temporary files
+.vscode/
+
 *.lst
 *.map
 *.log
 
-# VS Code
-.vscode/
-
-# Windows
 Thumbs.db
 Desktop.ini
