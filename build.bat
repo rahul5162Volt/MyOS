@@ -18,6 +18,7 @@ REM Assemble Bootloader
 REM ---------------------------------------
 
 nasm -f bin boot\boot.asm -o build\boot.bin
+nasm -f bin kernel\kernel.asm -o build\kernel.bin
 
 if errorlevel 1 goto :error
 
@@ -25,8 +26,10 @@ REM ---------------------------------------
 REM Run MyOS
 REM ---------------------------------------
 
+copy /b build\boot.bin+build\kernel.bin build\os.bin >nul
+
 qemu-system-i386 ^
--drive format=raw,file=build\boot.bin
+-drive format=raw,file=build\os.bin
 
 goto :eof
 
