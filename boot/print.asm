@@ -1,25 +1,46 @@
+;==========================================
+; MyOS BIOS Print Routines
+;==========================================
+
 bits 16
 
 ;------------------------------------------
-; print_string
-; DS:SI -> zero terminated string
+; print_char
+;
+; Input:
+;   AL = character
 ;------------------------------------------
 
-print_string:
+print_char:
 
-.loop:
-
-    mov al, [si]
-
-    cmp al, 0
-    je .done
+    push ax
 
     mov ah, 0x0E
     int 0x10
 
-    inc si
+    pop ax
 
-    jmp .loop
+    ret
+
+;------------------------------------------
+; print_string
+;
+; Input:
+;   DS:SI -> zero terminated string
+;------------------------------------------
+
+print_string:
+
+.next:
+
+    lodsb
+
+    cmp al, 0
+    je .done
+
+    call print_char
+
+    jmp .next
 
 .done:
 
