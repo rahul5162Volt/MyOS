@@ -42,15 +42,11 @@ start:
     mov si, ok_msg
     call print_string
 
-    ; Verify loaded kernel
-    mov ax, KERNEL_SEGMENT
-    mov ds, ax
+;----------------------------------
+; Jump to loaded kernel
+;----------------------------------
 
-    mov al, [0]
-    call print_char
-
-.hang:
-    jmp .hang
+    jmp KERNEL_SEGMENT:0x0000
 
 disk_error:
 
@@ -70,7 +66,7 @@ loading_msg:
     db "Loading...",13,10,0
 
 ok_msg:
-    db "OK ",0
+    db "OK",13,10,0
 
 error_msg:
     db "Disk Error",13,10,0
