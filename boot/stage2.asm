@@ -16,21 +16,19 @@ cli
 ; --------------------
 
 
+; Load kernel
+
 mov ax,0x1000
 mov es,ax
 
 xor bx,bx
 
-
 mov dl,0x80
 
-
-mov al,10        ; kernel sectors
-
+mov al,1
 mov ch,0
-mov cl,6         ; kernel starts sector 6
+mov cl,3
 mov dh,0
-
 
 call disk_load
 
@@ -81,25 +79,18 @@ bits 32
 
 protected_mode:
 
+    mov ax,0x10
 
-mov ax,0x10
+    mov ds,ax
+    mov es,ax
+    mov fs,ax
+    mov gs,ax
+    mov ss,ax
 
-
-mov ds,ax
-mov es,ax
-mov fs,ax
-mov gs,ax
-mov ss,ax
-
-
-
-mov esp,0x90000
+    mov esp,0x90000
 
 
-
-; jump kernel
-
-jmp 0x10000
+    jmp dword 0x10000
 
 
 
@@ -112,37 +103,37 @@ jmp 0x10000
 gdt_start:
 
 
-dq 0
+    dq 0
 
 
 
-; code
+    ; code
 
-dw 0xffff
-dw 0
+    dw 0xffff
+    dw 0
 
-db 0
+    db 0
 
-db 10011010b
+    db 10011010b
 
-db 11001111b
+    db 11001111b
 
-db 0
+    db 0
 
 
 
-; data
+    ; data
 
-dw 0xffff
-dw 0
+    dw 0xffff
+    dw 0
 
-db 0
+    db 0
 
-db 10010010b
+    db 10010010b
 
-db 11001111b
+    db 11001111b
 
-db 0
+    db 0
 
 
 
@@ -153,9 +144,9 @@ gdt_end:
 gdt_descriptor:
 
 
-dw gdt_end-gdt_start-1
+    dw gdt_end-gdt_start-1
 
-dd gdt_start
+    dd gdt_start
 
 
 

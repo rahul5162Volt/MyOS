@@ -67,6 +67,9 @@ build\boot.bin+build\stage2.bin+build\kernel.bin ^
 build\os.bin >nul
 
 
+fsutil file seteof build\os.bin 1474560
+
+
 
 qemu-system-i386 ^
 -drive format=raw,file=build\os.bin
