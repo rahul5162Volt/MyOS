@@ -53,11 +53,12 @@ start:
     ; -----------------------------
     ; Enter Protected Mode
     ; -----------------------------
+
     mov eax, cr0
     or eax, 1
     mov cr0, eax
 
-    jmp 0x08:protected_mode
+    jmp dword 0x08:protected_mode
 
 
 disk_fail:
@@ -75,24 +76,25 @@ bits 32
 
 protected_mode:
 
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
+    mov ax,0x10
+    mov ds,ax
+    mov es,ax
+    mov fs,ax
+    mov gs,ax
+    mov ss,ax
 
-    mov esp, 0x90000
+    mov esp,0x90000
 
-    ; Debug: Protected Mode entered
-    mov byte [0xB8000], 'S'
-    mov byte [0xB8001], 0x07
+    cld
 
-    ; Debug: About to jump to kernel
-    mov byte [0xB8002], 'K'
-    mov byte [0xB8003], 0x07
+    mov byte [0xB8000],'S'
+    mov byte [0xB8001],0x07
 
-    jmp 0x10000
+    mov byte [0xB8002],'K'
+    mov byte [0xB8003],0x07
+
+    mov eax, 0x10000
+    jmp eax
 
 
 ; =====================================================

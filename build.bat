@@ -41,6 +41,10 @@ build\os.bin >nul
 fsutil file seteof build\os.bin 1474560
 
 qemu-system-i386 ^
--drive format=raw,file=build\os.bin
+-drive format=raw,file=build\os.bin ^
+-d int,cpu_reset,guest_errors ^
+-D qemu.log ^
+-no-reboot ^
+-no-shutdown
 
 pause
