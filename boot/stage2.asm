@@ -2,148 +2,75 @@
 
 bits 16
 
-
 start:
-
-
     cli
 
+    xor ax, ax
+    mov ds, ax
 
-; Load kernel
-
-    mov ax,0x1000
-    mov es,ax
-
-    xor bx,bx
-
-
-    mov dl,[0x7DF0]
-
-
-    mov ah,0x02
-    mov al,1          ; kernel sectors
-
-    mov ch,0
-    mov cl,3          ; kernel starts sector 3
-
-    mov dh,0
-
-    mov ah,0x0E
-    mov al,'R'
+    ; -----------------------------
+    ; Debug: Stage2 started
+    ; -----------------------------
+    mov ah, 0x0E
+    mov al, 'R'
     int 0x10
+
+    ; -----------------------------
+    ; Load kernel to 0x10000
+    ; -----------------------------
+    mov ax, 0x1000
+    mov es, ax
+    xor bx, bx
+
+    mov dl, [0x7DF0]
+
+    mov ah, 0x02
+    mov al, 2          ; Read 2 sectors (temporary)
+    mov ch, 0
+    mov cl, 3          ; Kernel starts at sector 3
+    mov dh, 0
 
     int 0x13
-
     jc disk_fail
 
-
-
-; Enable A20
-
-    in al,0x92
-
-    or al,2
-
-    out 0x92,al
-
-    ; DEBUG
-    mov ah,0x0E
-    mov al,'A'
+    ; -----------------------------
+    ; Disk read succeeded
+    ; -----------------------------
+    mov ah, 0x0E
+    mov al, 'A'
     int 0x10
 
+    ; -----------------------------
+    ; Show first byte of loaded kernel
+    ; -----------------------------
+    mov al, [es:0]
 
+    cmp al, 0
+    jne byte_ok
 
-; Load GDT
+    mov al, '0'
 
-    lgdt [gdt_descriptor]
-
-    mov ah,0x0E
-    mov al,'B'
+byte_ok:
+    mov ah, 0x0E
     int 0x10
 
-; Protected mode
-
-    mov eax,cr0
-    or eax,1
-    mov cr0,eax
-
-
-    jmp 0x08:dword protected
-
+hang:
+    cli
+    hlt
+    jmp hang
 
 disk_fail:
+    mov ah, 0x0E
+    mov al, 'F'
+    int 0x10
+
+    ; Print BIOS error code (AH)
+    mov al, ah
+    add al, '0'
+    mov ah, 0x0E
+    int 0x10
 
     cli
-
-.hang:
+.fail:
     hlt
-    jmp .hang
-
-
-bits 32
-
-protected:
-
-    mov ax,0x10
-
-    mov ds,ax
-    mov es,ax
-    mov fs,ax
-    mov gs,ax
-    mov ss,ax
-
-
-    mov esp,0x90000
-
-
-    mov byte [0xB8000],'S'
-    mov byte [0xB8001],0x07
-
-
-    mov eax,0x10000
-    jmp eax
-
-
-
-
-; ==================
-; GDT
-; ==================
-
-
-gdt_start:
-
-
-dq 0
-
-
-; code
-
-dw 0xffff
-dw 0
-db 0
-db 10011010b
-db 11001111b
-db 0
-
-
-; data
-
-dw 0xffff
-dw 0
-db 0
-db 10010010b
-db 11001111b
-db 0
-
-
-
-gdt_end:
-
-
-
-gdt_descriptor:
-
-dw gdt_end-gdt_start-1
-
-dd gdt_start
+    jmp .fail
