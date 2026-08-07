@@ -12,12 +12,7 @@ start:
     xor ax, ax
     mov ds, ax
 
-    ; Debug: Stage2 started
-    mov ah, 0x0E
-    mov al, 'R'
-    int 0x10
-
-    ; Load kernel to 0x10000
+    ; Load kernel to physical address 0x10000.
     mov ax, 0x1000
     mov es, ax
     xor bx, bx
@@ -32,20 +27,15 @@ start:
     int 0x13
     jc disk_fail
 
-    ; Debug: Kernel loaded
-    mov ah, 0x0E
-    mov al, 'A'
-    int 0x10
-
-    ; Enable A20
+    ; Enable A20.
     in al, 0x92
     or al, 2
     out 0x92, al
 
-    ; Load GDT
+    ; Load the protected-mode GDT.
     lgdt [gdt_descriptor]
 
-    ; Enter Protected Mode
+    ; Enable protected mode.
     mov eax, cr0
     or eax, 1
     mov cr0, eax
@@ -71,21 +61,14 @@ protected_mode:
     mov esp, 0x90000
     cld
 
-    ; Debug: Protected Mode entered
-    mov byte [0xB8000], 'S'
-    mov byte [0xB8001], 0x07
-
-    ; Debug: About to jump to kernel
-    mov byte [0xB8002], 'K'
-    mov byte [0xB8003], 0x07
-
+    ; Kernel entry is linked and loaded at 0x10000.
     mov eax, 0x10000
     jmp eax
 
 gdt_start:
     dq 0
 
-    ; Code segment: base 0, limit 4 GiB
+    ; Code segment: base 0, limit 4 GiB.
     dw 0xFFFF
     dw 0x0000
     db 0x00
@@ -93,7 +76,7 @@ gdt_start:
     db 11001111b
     db 0x00
 
-    ; Data segment: base 0, limit 4 GiB
+    ; Data segment: base 0, limit 4 GiB.
     dw 0xFFFF
     dw 0x0000
     db 0x00
