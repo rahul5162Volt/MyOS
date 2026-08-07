@@ -7,11 +7,10 @@ start:
 
     cli
 
-    mov [BOOT_DRIVE],dl
-
-
     mov ax,0x0000
     mov ds,ax
+
+    mov [BOOT_DRIVE],dl
 
 
     mov si,msg
