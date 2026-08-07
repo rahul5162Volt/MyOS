@@ -1,34 +1,40 @@
 void kernel_main()
 {
-    asm volatile (
-        "mov $0x0E, %%ah\n\t"
-        "mov $'K', %%al\n\t"
-        "int $0x10\n\t"
 
-        "mov $'e', %%al\n\t"
-        "int $0x10\n\t"
+    char* video = (char*)0xB8000;
 
-        "mov $'r', %%al\n\t"
-        "int $0x10\n\t"
 
-        "mov $'n', %%al\n\t"
-        "int $0x10\n\t"
+    video[0] = 'K';
+    video[1] = 0x07;
 
-        "mov $'e', %%al\n\t"
-        "int $0x10\n\t"
 
-        "mov $'l', %%al\n\t"
-        "int $0x10\n\t"
+    video[2] = 'e';
+    video[3] = 0x07;
 
-        "mov $'!', %%al\n\t"
-        "int $0x10\n\t"
 
-        :
-        :
-        : "ax"
-    );
+    video[4] = 'r';
+    video[5] = 0x07;
 
-    for (;;)
+
+    video[6] = 'n';
+    video[7] = 0x07;
+
+
+    video[8] = 'e';
+    video[9] = 0x07;
+
+
+    video[10] = 'l';
+    video[11] = 0x07;
+
+
+    video[12] = '!';
+    video[13] = 0x07;
+
+
+    while(1)
     {
+
     }
+
 }
