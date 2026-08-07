@@ -3,72 +3,77 @@ bits 16
 org 0x8000
 
 
-
 start:
 
 
-cli
+    cli
+
+
+    mov [boot_drive],dl
 
 
 
-; --------------------
+; --------------------------
 ; Load kernel
-; --------------------
+; --------------------------
 
 
-; Load kernel
+    mov ax,0x1000
+    mov es,ax
 
-mov ax,0x1000
-mov es,ax
-
-xor bx,bx
-
-mov dl,0x80
-
-mov al,1
-mov ch,0
-mov cl,3
-mov dh,0
-
-call disk_load
+    xor bx,bx
 
 
+    mov dl,[boot_drive]
 
 
-; --------------------
+    mov al,1          ; kernel sectors
+
+    mov ch,0
+    mov cl,3          ; kernel starts sector 3
+
+    mov dh,0
+
+
+
+    call disk_load
+
+
+
+
+; --------------------------
 ; Enable A20
-; --------------------
+; --------------------------
 
-in al,0x92
+    in al,0x92
 
-or al,00000010b
+    or al,00000010b
 
-out 0x92,al
-
-
+    out 0x92,al
 
 
-; --------------------
+
+; --------------------------
 ; Load GDT
-; --------------------
+; --------------------------
 
-lgdt [gdt_descriptor]
-
-
-
-; --------------------
-; Protected Mode
-; --------------------
-
-mov eax,cr0
-
-or eax,1
-
-mov cr0,eax
+    lgdt [gdt_descriptor]
 
 
 
-jmp 0x08:protected_mode
+; --------------------------
+; Enter Protected Mode
+; --------------------------
+
+    mov eax,cr0
+
+    or eax,1
+
+    mov cr0,eax
+
+
+
+    jmp 0x08:protected_mode
 
 
 
@@ -76,10 +81,11 @@ jmp 0x08:protected_mode
 bits 32
 
 
-
 protected_mode:
 
+
     mov ax,0x10
+
 
     mov ds,ax
     mov es,ax
@@ -87,53 +93,69 @@ protected_mode:
     mov gs,ax
     mov ss,ax
 
+
+
     mov esp,0x90000
 
 
-    jmp dword 0x10000
+
+; Debug marker
+
+    mov byte [0xB8000],'S'
+    mov byte [0xB8001],0x07
+
+
+
+; Jump kernel
+
+    mov eax,0x10000
+
+    jmp eax
 
 
 
 
-; =====================
+; =========================
 ; GDT
-; =====================
+; =========================
 
 
 gdt_start:
 
 
-    dq 0
+dq 0
 
 
 
-    ; code
+; Code descriptor
 
-    dw 0xffff
-    dw 0
+dw 0xffff
 
-    db 0
+dw 0
 
-    db 10011010b
+db 0
 
-    db 11001111b
+db 10011010b
 
-    db 0
+db 11001111b
+
+db 0
 
 
 
-    ; data
+; Data descriptor
 
-    dw 0xffff
-    dw 0
+dw 0xffff
 
-    db 0
+dw 0
 
-    db 10010010b
+db 0
 
-    db 11001111b
+db 10010010b
 
-    db 0
+db 11001111b
+
+db 0
 
 
 
@@ -143,10 +165,15 @@ gdt_end:
 
 gdt_descriptor:
 
+dw gdt_end-gdt_start-1
 
-    dw gdt_end-gdt_start-1
+dd gdt_start
 
-    dd gdt_start
+
+
+boot_drive:
+
+db 0
 
 
 

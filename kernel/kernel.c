@@ -32,7 +32,6 @@ void kernel_main()
     video[13]=0x07;
 
 
-
     while(1)
     {
 

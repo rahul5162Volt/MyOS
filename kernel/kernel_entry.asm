@@ -14,13 +14,13 @@ section .text
 start:
 
 
-mov esp,0x90000
+    mov esp,0x90000
 
 
-call kernel_main
+    call kernel_main
 
 
 
 .hang:
 
-jmp .hang
+    jmp .hang

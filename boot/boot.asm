@@ -29,22 +29,22 @@ start:
 
 
 
-; -------------------------
+; --------------------------
 ; Load Stage2
-; -------------------------
+; --------------------------
 
-    mov ax, 0x0800
-    mov es, ax
+    mov ax,0x0800
+    mov es,ax
 
     xor bx,bx
 
 
     mov dl,[boot_drive]
 
+    mov al,1          ; stage2 is 114 bytes
 
-    mov al,1
     mov ch,0
-    mov cl,3
+    mov cl,2
     mov dh,0
 
 
@@ -59,8 +59,6 @@ start:
     call print_string
 
 
-
-; jump stage2
 
     jmp 0x0800:0x0000
 
@@ -81,19 +79,25 @@ disk_error:
 
 
 boot_drive:
+
     db 0
 
 
 
 loading_msg:
+
     db "Loading Stage2...",13,10,0
 
 
+
 ok_msg:
+
     db "Stage2 Loaded",13,10,0
 
 
+
 error_msg:
+
     db "Disk Error",13,10,0
 
 
