@@ -1,22 +1,52 @@
 bits 16
 
-
 org 0x8000
+
 
 
 start:
 
 
-    cli
+cli
+
+
+
+; --------------------
+; Load kernel
+; --------------------
+
+
+mov ax,0x1000
+mov es,ax
+
+xor bx,bx
+
+
+mov dl,0x80
+
+
+mov al,10        ; kernel sectors
+
+mov ch,0
+mov cl,6         ; kernel starts sector 6
+mov dh,0
+
+
+call disk_load
+
+
 
 
 ; --------------------
 ; Enable A20
 ; --------------------
 
-    in al,0x92
-    or al,00000010b
-    out 0x92,al
+in al,0x92
+
+or al,00000010b
+
+out 0x92,al
+
 
 
 
@@ -24,60 +54,59 @@ start:
 ; Load GDT
 ; --------------------
 
-    lgdt [gdt_descriptor]
+lgdt [gdt_descriptor]
 
 
 
 ; --------------------
-; Enter Protected Mode
+; Protected Mode
 ; --------------------
 
-    mov eax,cr0
-    or eax,1
-    mov cr0,eax
+mov eax,cr0
+
+or eax,1
+
+mov cr0,eax
 
 
 
-    jmp 0x08:protected_mode
+jmp 0x08:protected_mode
+
 
 
 
 bits 32
 
 
+
 protected_mode:
 
 
-    mov ax,0x10
-
-    mov ds,ax
-    mov es,ax
-    mov fs,ax
-    mov gs,ax
-    mov ss,ax
+mov ax,0x10
 
 
-
-    mov esp,0x90000
+mov ds,ax
+mov es,ax
+mov fs,ax
+mov gs,ax
+mov ss,ax
 
 
 
-; jump to loaded kernel
-
-    call 0x10000
+mov esp,0x90000
 
 
 
-.hang:
+; jump kernel
 
-    jmp .hang
+jmp 0x10000
 
 
 
 
-; ====================
+; =====================
 ; GDT
-; ====================
+; =====================
 
 
 gdt_start:
@@ -87,25 +116,33 @@ dq 0
 
 
 
-; code segment
+; code
 
 dw 0xffff
-dw 0x0000
-db 0x00
+dw 0
+
+db 0
+
 db 10011010b
+
 db 11001111b
-db 0x00
+
+db 0
 
 
 
-; data segment
+; data
 
 dw 0xffff
-dw 0x0000
-db 0x00
+dw 0
+
+db 0
+
 db 10010010b
+
 db 11001111b
-db 0x00
+
+db 0
 
 
 
@@ -115,5 +152,11 @@ gdt_end:
 
 gdt_descriptor:
 
+
 dw gdt_end-gdt_start-1
+
 dd gdt_start
+
+
+
+%include "boot/disk.asm"

@@ -1,75 +1,104 @@
 [org 0x7C00]
+
 bits 16
 
+
 jmp start
+
 
 %include "boot/boot.inc"
 %include "boot/print.asm"
 %include "boot/disk.asm"
 
+
 start:
 
     cli
 
-    ; Save BIOS boot drive
+
     mov [boot_drive], dl
 
-    ; DS = CS
+
     mov ax, cs
     mov ds, ax
 
-    ; Print Loading...
+
+
     mov si, loading_msg
     call print_string
 
-    ; Read sector 2 -> 0x1000:0000
-    mov ax, KERNEL_SEGMENT
+
+
+; -------------------------
+; Load Stage2
+; -------------------------
+
+    mov ax, 0x0800
     mov es, ax
-    xor bx, bx
 
-    mov dl, [boot_drive]
+    xor bx,bx
 
-    mov al, 1
-    mov ch, 0
-    mov cl, 2
-    mov dh, 0
+
+    mov dl,[boot_drive]
+
+
+    mov al,4        ; stage2 sectors
+
+    mov ch,0
+    mov cl,2
+    mov dh,0
+
 
     call disk_load
 
+
     jc disk_error
 
-    ; Print OK
-    mov si, ok_msg
+
+
+    mov si,ok_msg
     call print_string
 
-;----------------------------------
-; Jump to loaded kernel
-;----------------------------------
 
-    jmp KERNEL_SEGMENT:0x0000
+
+; jump stage2
+
+    jmp 0x0800:0x0000
+
+
+
 
 disk_error:
 
-    mov ax, cs
-    mov ds, ax
-
-    mov si, error_msg
+    mov si,error_msg
     call print_string
 
-.error:
-    jmp .error
+
+.hang:
+
+    jmp .hang
+
+
+
 
 boot_drive:
     db 0
 
+
+
 loading_msg:
-    db "Loading...",13,10,0
+    db "Loading Stage2...",13,10,0
+
 
 ok_msg:
-    db "OK",13,10,0
+    db "Stage2 Loaded",13,10,0
+
 
 error_msg:
     db "Disk Error",13,10,0
 
+
+
 times 510-($-$$) db 0
+
 dw 0xAA55
