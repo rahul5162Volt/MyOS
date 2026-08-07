@@ -3,35 +3,22 @@
 bits 16
 
 
-jmp start
-
-
-%include "boot/boot.inc"
-%include "boot/print.asm"
-%include "boot/disk.asm"
-
-
 start:
 
     cli
 
-
-    mov [boot_drive], dl
-
-
-    mov ax, cs
-    mov ds, ax
+    mov [BOOT_DRIVE],dl
 
 
-
-    mov si, loading_msg
-    call print_string
-
+    mov ax,0x0000
+    mov ds,ax
 
 
-; --------------------------
-; Load Stage2
-; --------------------------
+    mov si,msg
+    call print
+
+
+; Load stage2
 
     mov ax,0x0800
     mov es,ax
@@ -39,66 +26,74 @@ start:
     xor bx,bx
 
 
-    mov dl,[boot_drive]
+    mov dl,[BOOT_DRIVE]
 
-    mov al,1          ; stage2 is 114 bytes
+    mov ah,0x02
+    mov al,1          ; stage2 = 1 sector
 
     mov ch,0
     mov cl,2
     mov dh,0
 
 
-    call disk_load
-
+    int 0x13
 
     jc disk_error
 
-
-
-    mov si,ok_msg
-    call print_string
-
-
+    mov [0x7DF0], dl
 
     jmp 0x0800:0x0000
 
 
 
-
 disk_error:
 
-    mov si,error_msg
-    call print_string
+    mov si,error
+    call print
 
 
-.hang:
+hang:
 
-    jmp .hang
-
-
-
-
-boot_drive:
-
-    db 0
+    jmp hang
 
 
 
-loading_msg:
+print:
 
-    db "Loading Stage2...",13,10,0
-
-
-
-ok_msg:
-
-    db "Stage2 Loaded",13,10,0
+    mov ah,0x0E
 
 
+.loop:
 
-error_msg:
+    lodsb
 
-    db "Disk Error",13,10,0
+    cmp al,0
+    je .done
+
+    int 0x10
+
+    jmp .loop
+
+
+.done:
+
+    ret
+
+
+
+BOOT_DRIVE:
+
+db 0
+
+
+msg:
+
+db "Loading Stage2...",13,10,0
+
+
+error:
+
+db "Disk Error",0
 
 
 

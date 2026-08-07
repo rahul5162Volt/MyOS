@@ -1,6 +1,6 @@
-bits 16
+[org 0x8000]
 
-org 0x8000
+bits 16
 
 
 start:
@@ -9,14 +9,7 @@ start:
     cli
 
 
-    mov [boot_drive],dl
-
-
-
-; --------------------------
 ; Load kernel
-; --------------------------
-
 
     mov ax,0x1000
     mov es,ax
@@ -24,9 +17,10 @@ start:
     xor bx,bx
 
 
-    mov dl,[boot_drive]
+    mov dl,[0x7DF0]
 
 
+    mov ah,0x02
     mov al,1          ; kernel sectors
 
     mov ch,0
@@ -34,58 +28,63 @@ start:
 
     mov dh,0
 
+    mov ah,0x0E
+    mov al,'R'
+    int 0x10
+
+    int 0x13
+
+    jc disk_fail
 
 
-    call disk_load
 
-
-
-
-; --------------------------
 ; Enable A20
-; --------------------------
 
     in al,0x92
 
-    or al,00000010b
+    or al,2
 
     out 0x92,al
 
+    ; DEBUG
+    mov ah,0x0E
+    mov al,'A'
+    int 0x10
 
 
-; --------------------------
+
 ; Load GDT
-; --------------------------
 
     lgdt [gdt_descriptor]
 
+    mov ah,0x0E
+    mov al,'B'
+    int 0x10
 
-
-; --------------------------
-; Enter Protected Mode
-; --------------------------
+; Protected mode
 
     mov eax,cr0
-
     or eax,1
-
     mov cr0,eax
 
 
+    jmp 0x08:dword protected
 
-    jmp 0x08:protected_mode
 
+disk_fail:
 
+    cli
+
+.hang:
+    hlt
+    jmp .hang
 
 
 bits 32
 
-
-protected_mode:
-
+protected:
 
     mov ax,0x10
-
 
     mov ds,ax
     mov es,ax
@@ -94,30 +93,22 @@ protected_mode:
     mov ss,ax
 
 
-
     mov esp,0x90000
 
-
-
-; Debug marker
 
     mov byte [0xB8000],'S'
     mov byte [0xB8001],0x07
 
 
-
-; Jump kernel
-
     mov eax,0x10000
-
     jmp eax
 
 
 
 
-; =========================
+; ==================
 ; GDT
-; =========================
+; ==================
 
 
 gdt_start:
@@ -126,35 +117,23 @@ gdt_start:
 dq 0
 
 
-
-; Code descriptor
+; code
 
 dw 0xffff
-
 dw 0
-
 db 0
-
 db 10011010b
-
 db 11001111b
-
 db 0
 
 
-
-; Data descriptor
+; data
 
 dw 0xffff
-
 dw 0
-
 db 0
-
 db 10010010b
-
 db 11001111b
-
 db 0
 
 
@@ -168,13 +147,3 @@ gdt_descriptor:
 dw gdt_end-gdt_start-1
 
 dd gdt_start
-
-
-
-boot_drive:
-
-db 0
-
-
-
-%include "boot/disk.asm"

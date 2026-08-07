@@ -1,6 +1,5 @@
 ENTRY(start)
 
-
 SECTIONS
 {
 
@@ -29,6 +28,5 @@ SECTIONS
 {
 *(.bss*)
 }
-
 
 }
