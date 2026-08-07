@@ -2,31 +2,25 @@ ENTRY(start)
 
 SECTIONS
 {
+    . = 0x10000;
 
-. = 0x10000;
+    .text :
+    {
+        *(.text*)
+    }
 
+    .rodata :
+    {
+        *(.rodata*)
+    }
 
-.text :
-{
-*(.text*)
-}
+    .data :
+    {
+        *(.data*)
+    }
 
-
-.rodata :
-{
-*(.rodata*)
-}
-
-
-.data :
-{
-*(.data*)
-}
-
-
-.bss :
-{
-*(.bss*)
-}
-
+    .bss :
+    {
+        *(.bss*)
+    }
 }

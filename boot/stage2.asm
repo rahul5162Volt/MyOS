@@ -5,12 +5,13 @@ bits 16
 start:
     cli
 
+    ; -----------------------------
+    ; Initialize segments
+    ; -----------------------------
     xor ax, ax
     mov ds, ax
 
-    ; -----------------------------
     ; Debug: Stage2 started
-    ; -----------------------------
     mov ah, 0x0E
     mov al, 'R'
     int 0x10
@@ -25,52 +26,101 @@ start:
     mov dl, [0x7DF0]
 
     mov ah, 0x02
-    mov al, 2          ; Read 2 sectors (temporary)
+    mov al, 1
     mov ch, 0
-    mov cl, 3          ; Kernel starts at sector 3
+    mov cl, 3
     mov dh, 0
-
     int 0x13
     jc disk_fail
 
-    ; -----------------------------
-    ; Disk read succeeded
-    ; -----------------------------
+    ; Debug: Kernel loaded
     mov ah, 0x0E
     mov al, 'A'
     int 0x10
 
     ; -----------------------------
-    ; Show first byte of loaded kernel
+    ; Enable A20
     ; -----------------------------
-    mov al, [es:0]
+    in al, 0x92
+    or al, 2
+    out 0x92, al
 
-    cmp al, 0
-    jne byte_ok
+    ; -----------------------------
+    ; Load GDT
+    ; -----------------------------
+    lgdt [gdt_descriptor]
 
-    mov al, '0'
+    ; -----------------------------
+    ; Enter Protected Mode
+    ; -----------------------------
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
 
-byte_ok:
-    mov ah, 0x0E
-    int 0x10
+    jmp 0x08:protected_mode
 
-hang:
-    cli
-    hlt
-    jmp hang
 
 disk_fail:
-    mov ah, 0x0E
-    mov al, 'F'
-    int 0x10
-
-    ; Print BIOS error code (AH)
-    mov al, ah
-    add al, '0'
-    mov ah, 0x0E
-    int 0x10
-
     cli
-.fail:
+.hang:
     hlt
-    jmp .fail
+    jmp .hang
+
+
+; =====================================================
+; 32-bit code
+; =====================================================
+
+bits 32
+
+protected_mode:
+
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    mov esp, 0x90000
+
+    ; Debug: Protected Mode entered
+    mov byte [0xB8000], 'S'
+    mov byte [0xB8001], 0x07
+
+    ; Debug: About to jump to kernel
+    mov byte [0xB8002], 'K'
+    mov byte [0xB8003], 0x07
+
+    jmp 0x10000
+
+
+; =====================================================
+; GDT
+; =====================================================
+
+gdt_start:
+
+dq 0
+
+; Code segment
+dw 0xFFFF
+dw 0x0000
+db 0x00
+db 10011010b
+db 11001111b
+db 0x00
+
+; Data segment
+dw 0xFFFF
+dw 0x0000
+db 0x00
+db 10010010b
+db 11001111b
+db 0x00
+
+gdt_end:
+
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
