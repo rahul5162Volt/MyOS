@@ -42,7 +42,7 @@ start:
     mov dl,[boot_drive]
 
 
-    mov al,4        ; stage2 sectors
+    mov al,8        ; stage2 sectors
 
     mov ch,0
     mov cl,2
