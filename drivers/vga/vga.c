@@ -266,99 +266,16 @@ void vga_put_char(char character)
         if (column > old_length)
             column = old_length;
 
-        /*
-         * Save the text AFTER the cursor before shifting
-         * rows. This is the important part that prevents
-         * duplication.
-         */
         remainder_length =
             old_length - column;
 
-        /*
-         * Last screen row:
-         *
-         * We cannot create row 25. Instead, discard the
-         * oldest screen row by scrolling, then create the
-         * split on the new bottom row.
-         *
-         * Since the cursor was on the last row, the text
-         * before the cursor belongs to the current line
-         * and the text after it belongs to the new line.
-         */
         if (row == VGA_HEIGHT - 1)
         {
-            unsigned int index;
-
-            /*
-             * First preserve the part after the cursor.
-             */
-            char remainder[VGA_WIDTH];
-            unsigned int remainder_count =
-                remainder_length;
-
-            if (remainder_count > VGA_WIDTH)
-                remainder_count = VGA_WIDTH;
-
-            index = 0;
-
-            while (index < remainder_count)
-            {
-                remainder[index] =
-                    vga_read_cell(
-                        row,
-                        column + index);
-
-                index++;
-            }
-
-            /*
-             * Scroll the screen.
-             */
             vga_scroll();
-
-            /*
-             * The new bottom row is the continuation
-             * of the line.
-             */
-            row = VGA_HEIGHT - 1;
-
-            vga_clear_row(row);
-
-            index = 0;
-
-            while (index < remainder_count)
-            {
-                vga_write_cell(
-                    row,
-                    index,
-                    remainder[index]);
-
-                index++;
-            }
-
-            vga_line_lengths[row] =
-                (unsigned char)remainder_count;
-
-            vga_line_hard_break[row] = 0;
-
-            /*
-             * Cursor is at the beginning of the new line.
-             */
-            vga_cursor =
-                row * VGA_WIDTH;
-
-            vga_preferred_column = 0;
-
-            vga_update_cursor();
-            return;
+            row--;
         }
-
-        /*
-         * Normal row insertion.
-         *
-         * Shift all rows below the current row down by one.
-         */
-        vga_insert_empty_row(row);
+        else
+            vga_insert_empty_row(row);
 
         /*
          * Move only the text that was AFTER the cursor
