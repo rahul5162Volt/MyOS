@@ -149,8 +149,14 @@ void vga_put_char(char character)
         }
         else
         {
+            /*
+             * Insert a new line without duplicating the current line.
+             * Shift only the rows BELOW the current row, starting from
+             * the bottom. The old current row must remain untouched so
+             * that the text after the cursor can be moved to row + 1.
+             */
             unsigned int shift_row = VGA_HEIGHT - 1;
-            while (shift_row > row)
+            while (shift_row > row + 1)
             {
                 vga_copy_row(shift_row - 1, shift_row);
                 shift_row--;
@@ -159,11 +165,14 @@ void vga_put_char(char character)
 
         {
             unsigned int old_length = vga_line_lengths[row];
+            unsigned int remainder_length = old_length - column;
             unsigned int move_count = 0;
 
-            while (column + move_count < old_length)
+            /* Move the text after the cursor onto the newly inserted row. */
+            while (move_count < remainder_length)
             {
-                char character_to_move = VGA_MEMORY[(row * VGA_WIDTH + column + move_count) * 2];
+                char character_to_move =
+                    VGA_MEMORY[(row * VGA_WIDTH + column + move_count) * 2];
                 vga_write_cell(row + 1, move_count, character_to_move);
                 move_count++;
             }
@@ -175,7 +184,7 @@ void vga_put_char(char character)
             }
 
             vga_line_lengths[row] = (unsigned char)column;
-            vga_line_lengths[row + 1] = (unsigned char)(old_length - column);
+            vga_line_lengths[row + 1] = (unsigned char)remainder_length;
             vga_line_hard_break[row] = 1;
             vga_line_hard_break[row + 1] = 0;
         }
