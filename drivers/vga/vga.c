@@ -311,6 +311,18 @@ void vga_put_char(char character)
             move_count++;
         }
 
+        move_count = column;
+
+        while (move_count < VGA_WIDTH)
+        {
+            vga_write_cell(
+                row,
+                move_count,
+                ' ');
+
+            move_count++;
+        }
+
         /*
          * The current row ends at the cursor.
          */
