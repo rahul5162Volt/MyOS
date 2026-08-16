@@ -32,8 +32,19 @@ i686-elf-gcc ^
 -ffreestanding ^
 -fno-stack-protector ^
 -fno-pie ^
--c kernel\kernel.c ^
--o build\kernel.o
+-I drivers ^
+-c drivers\vga\vga.c ^
+-o build\vga.o
+if errorlevel 1 goto :error
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-c drivers\keyboard\keyboard.c ^
+-o build\keyboard.o
 if errorlevel 1 goto :error
 
 i686-elf-ld ^
@@ -41,8 +52,9 @@ i686-elf-ld ^
 -T linker\linker.ld ^
 -o build\kernel.elf ^
 build\kernel_entry.o ^
-build\kernel.o
-if errorlevel 1 goto :error
+build\kernel.o ^
+build\vga.o ^
+build\keyboard.o
 
 i686-elf-objcopy ^
 -O binary ^
