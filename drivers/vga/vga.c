@@ -673,24 +673,12 @@ void vga_cursor_down(void)
     if (row >= VGA_HEIGHT - 1)
         return;
 
-    if (vga_line_lengths[row + 1] == 0)
-        return;
-
     row++;
 
-    if (vga_preferred_column >
-        vga_line_lengths[row])
-    {
-        vga_cursor =
-            row * VGA_WIDTH +
-            vga_line_lengths[row];
-    }
+    if (vga_preferred_column > vga_line_lengths[row])
+        vga_cursor = row * VGA_WIDTH + vga_line_lengths[row];
     else
-    {
-        vga_cursor =
-            row * VGA_WIDTH +
-            vga_preferred_column;
-    }
+        vga_cursor = row * VGA_WIDTH + vga_preferred_column;
 
     vga_update_cursor();
 }
