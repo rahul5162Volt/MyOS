@@ -1,4 +1,5 @@
 #include "vga.h"
+#include "../../editor/editor.h"
 
 #pragma GCC optimize ("Os")
 
@@ -29,6 +30,19 @@ static unsigned int vga_row(void)
 static unsigned int vga_column(void)
 {
     return vga_cursor % VGA_WIDTH;
+}
+
+static void vga_sync_line_state(unsigned int row)
+{
+    editor_set_line_length(
+        row,
+        vga_line_lengths[row]
+    );
+
+    editor_set_hard_break(
+        row,
+        vga_line_hard_break[row]
+    );
 }
 
 static void vga_write_cell(
@@ -63,22 +77,27 @@ static void vga_clear_row(unsigned int row)
 
     vga_line_lengths[row] = 0;
     vga_line_hard_break[row] = 0;
+
+    vga_sync_line_state(row);
 }
 
-static void vga_copy_row(
-    unsigned int source,
-    unsigned int destination)
+static void vga_copy_row(unsigned int source, unsigned int destination)
 {
     unsigned int column = 0;
 
     while (column < VGA_WIDTH)
     {
-        char character = vga_read_cell(source, column);
+        unsigned int source_offset =
+            source * VGA_WIDTH + column;
 
-        vga_write_cell(
-            destination,
-            column,
-            character);
+        unsigned int destination_offset =
+            destination * VGA_WIDTH + column;
+
+        VGA_MEMORY[destination_offset * 2] =
+            VGA_MEMORY[source_offset * 2];
+
+        VGA_MEMORY[destination_offset * 2 + 1] =
+            VGA_MEMORY[source_offset * 2 + 1];
 
         column++;
     }
@@ -88,6 +107,7 @@ static void vga_copy_row(
 
     vga_line_hard_break[destination] =
         vga_line_hard_break[source];
+    vga_sync_line_state(destination);
 }
 
 static void vga_scroll(void)
@@ -150,7 +170,7 @@ static void vga_insert_character(
     while (1)
     {
         unsigned int length =
-            vga_line_lengths[row];
+            editor_get_line_length(row);
 
         if (column < length)
         {
@@ -171,8 +191,16 @@ static void vga_insert_character(
                 column,
                 carry);
 
-            if (vga_line_lengths[row] < VGA_WIDTH)
-                vga_line_lengths[row]++;
+            if (editor_get_line_length(row) < VGA_WIDTH)
+            {
+                editor_set_line_length(
+                    row,
+                    editor_get_line_length(row) + 1
+                );
+
+                vga_line_lengths[row] =
+                    (unsigned char)editor_get_line_length(row);
+            }
 
             return;
         }
@@ -258,7 +286,7 @@ void vga_put_char(char character)
         }
 
         old_length =
-            vga_line_lengths[row];
+            editor_get_line_length(row);
 
         /*
          * The cursor may legally be at the end of a line.
@@ -326,14 +354,14 @@ void vga_put_char(char character)
         /*
          * The current row ends at the cursor.
          */
-        vga_line_lengths[row] =
-            (unsigned char)column;
-
-        /*
-         * The newly created row contains the remainder.
-         */
-        vga_line_lengths[row + 1] =
-            (unsigned char)remainder_length;
+        editor_set_line_length(
+            row,
+            column
+        );
+        editor_set_line_length(
+            row + 1,
+            remainder_length
+        );
 
         /*
          * Current row is now a hard line break.
@@ -341,6 +369,9 @@ void vga_put_char(char character)
         vga_line_hard_break[row] = 1;
 
         vga_line_hard_break[row + 1] = 0;
+
+        vga_sync_line_state(row);
+        vga_sync_line_state(row + 1);
 
         /*
          * Cursor moves to the beginning of the new line.
@@ -402,7 +433,7 @@ void vga_put_char(char character)
     /*
      * If the line became full, move to the next row.
      */
-    if (vga_line_lengths[row] >= VGA_WIDTH)
+    if (editor_get_line_length(row) >= VGA_WIDTH)
     {
         if (row == VGA_HEIGHT - 1)
         {
@@ -449,7 +480,7 @@ void vga_backspace(void)
     {
         unsigned int index = column;
 
-        while (index < vga_line_lengths[row])
+        while (index < editor_get_line_length(row))
         {
             char next_character =
                 vga_read_cell(row, index);
@@ -463,6 +494,7 @@ void vga_backspace(void)
         }
 
         vga_line_lengths[row]--;
+        vga_sync_line_state(row);
 
         vga_write_cell(
             row,
@@ -482,13 +514,13 @@ void vga_backspace(void)
      * At column zero, merge with the previous line
      * only when there is an actual hard line break.
      */
-    if (row > 0 && vga_line_hard_break[row - 1])
+    if (row > 0 && editor_has_hard_break(row - 1))
     {
         unsigned int previous_length =
-            vga_line_lengths[row - 1];
+            editor_get_line_length(row - 1);
 
         unsigned int current_length =
-            vga_line_lengths[row];
+            editor_get_line_length(row);
 
         unsigned int index = 0;
 
@@ -509,6 +541,7 @@ void vga_backspace(void)
 
         vga_line_lengths[row - 1] =
             (unsigned char)previous_length;
+        vga_sync_line_state(row - 1);
 
         /*
          * Shift everything below the deleted line upward.
@@ -537,6 +570,7 @@ void vga_backspace(void)
             (previous_length - current_length);
 
         vga_line_hard_break[row - 1] = 1;
+        vga_sync_line_state(row - 1);
 
         vga_preferred_column =
             vga_column();
@@ -550,13 +584,14 @@ void vga_backspace(void)
      *
      * Move to the end of the previous physical row.
      */
-    if (vga_line_lengths[row - 1] >= VGA_WIDTH)
+    if (editor_get_line_length(row - 1) >= VGA_WIDTH)
     {
         vga_cursor =
             (row - 1) * VGA_WIDTH +
             (VGA_WIDTH - 1);
 
         vga_line_lengths[row - 1]--;
+        vga_sync_line_state(row - 1);
 
         vga_write_cell(
             row - 1,
@@ -576,7 +611,7 @@ void vga_backspace(void)
      */
     vga_cursor =
         (row - 1) * VGA_WIDTH +
-        vga_line_lengths[row - 1];
+        editor_get_line_length(row - 1);
 
     vga_preferred_column =
         vga_column();
@@ -604,9 +639,15 @@ void vga_cursor_left(void)
     }
     else if (row > 0)
     {
-        vga_cursor =
-            (row - 1) * VGA_WIDTH +
-            vga_line_lengths[row - 1];
+        unsigned int previous_length =
+            editor_get_line_length(row - 1);
+
+        if (previous_length >= VGA_WIDTH)
+            vga_cursor =
+                (row - 1) * VGA_WIDTH + (VGA_WIDTH - 1);
+        else
+            vga_cursor =
+                (row - 1) * VGA_WIDTH + previous_length;
     }
 
     vga_preferred_column =
@@ -623,12 +664,12 @@ void vga_cursor_right(void)
     if (row >= VGA_HEIGHT)
         return;
 
-    if (column < vga_line_lengths[row])
+    if (column < editor_get_line_length(row))
     {
         vga_cursor++;
     }
     else if (row < VGA_HEIGHT - 1 &&
-             vga_line_lengths[row] == VGA_WIDTH)
+             editor_get_line_length(row) == VGA_WIDTH)
     {
         vga_cursor =
             (row + 1) * VGA_WIDTH;
@@ -649,19 +690,12 @@ void vga_cursor_up(void)
 
     row--;
 
-    if (vga_preferred_column >
-        vga_line_lengths[row])
-    {
-        vga_cursor =
-            row * VGA_WIDTH +
-            vga_line_lengths[row];
-    }
+    unsigned int line_length = editor_get_line_length(row);
+
+    if (vga_preferred_column > line_length)
+        vga_cursor = row * VGA_WIDTH + line_length;
     else
-    {
-        vga_cursor =
-            row * VGA_WIDTH +
-            vga_preferred_column;
-    }
+        vga_cursor = row * VGA_WIDTH + vga_preferred_column;
 
     vga_update_cursor();
 }
@@ -675,8 +709,10 @@ void vga_cursor_down(void)
 
     row++;
 
-    if (vga_preferred_column > vga_line_lengths[row])
-        vga_cursor = row * VGA_WIDTH + vga_line_lengths[row];
+    unsigned int line_length = editor_get_line_length(row);
+
+    if (vga_preferred_column > line_length)
+        vga_cursor = row * VGA_WIDTH + line_length;
     else
         vga_cursor = row * VGA_WIDTH + vga_preferred_column;
 

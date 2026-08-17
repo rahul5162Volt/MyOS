@@ -1,8 +1,10 @@
 #include "vga/vga.h"
 #include "keyboard/keyboard.h"
+#include "editor/editor.h"
 
 void kernel_main()
 {
+    editor_init();
     vga_clear();
     vga_print("MyOS\n");
     vga_print("Keyboard ready.");

@@ -47,6 +47,17 @@ i686-elf-gcc ^
 -o build\keyboard.o
 if errorlevel 1 goto :error
 
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
+-c editor\editor.c ^
+-o build\editor.o
+if errorlevel 1 goto :error
+
 i686-elf-ld ^
 -m elf_i386 ^
 -T linker\linker.ld ^
@@ -54,7 +65,8 @@ i686-elf-ld ^
 build\kernel_entry.o ^
 build\kernel.o ^
 build\vga.o ^
-build\keyboard.o
+build\keyboard.o ^
+build\editor.o
 
 i686-elf-objcopy ^
 -O binary ^
