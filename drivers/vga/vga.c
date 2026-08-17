@@ -351,24 +351,17 @@ void vga_put_char(char character)
             move_count++;
         }
 
-        /*
-         * The current row ends at the cursor.
-         */
-        editor_set_line_length(
-            row,
-            column
-        );
-        editor_set_line_length(
-            row + 1,
-            remainder_length
-        );
+        editor_set_line_length(row, column);
+        editor_set_line_length(row + 1, remainder_length);
 
-        /*
-         * Current row is now a hard line break.
-         */
-        vga_line_hard_break[row] = 1;
+        editor_set_hard_break(row, 1);
+        editor_set_hard_break(row + 1, 0);
 
-        vga_line_hard_break[row + 1] = 0;
+        vga_line_lengths[row] =
+            (unsigned char)editor_get_line_length(row);
+
+        vga_line_lengths[row + 1] =
+            (unsigned char)editor_get_line_length(row + 1);
 
         vga_sync_line_state(row);
         vga_sync_line_state(row + 1);
@@ -498,7 +491,7 @@ void vga_backspace(void)
 
         vga_write_cell(
             row,
-            vga_line_lengths[row],
+            editor_get_line_length(row),
             ' ');
 
         vga_cursor--;
@@ -539,13 +532,14 @@ void vga_backspace(void)
             index++;
         }
 
-        vga_line_lengths[row - 1] =
-            (unsigned char)previous_length;
-        vga_sync_line_state(row - 1);
+        editor_set_line_length(
+            row - 1,
+            previous_length
+        );
 
         /*
-         * Shift everything below the deleted line upward.
-         */
+        * Shift everything below the deleted line upward.
+        */
         {
             unsigned int shift_row = row;
 
@@ -553,7 +547,8 @@ void vga_backspace(void)
             {
                 vga_copy_row(
                     shift_row + 1,
-                    shift_row);
+                    shift_row
+                );
 
                 shift_row++;
             }
@@ -562,14 +557,21 @@ void vga_backspace(void)
         }
 
         /*
-         * Cursor returns to the position immediately
-         * after the previous line's original text.
-         */
+        * Cursor returns to the end of the merged line.
+        */
         vga_cursor =
             (row - 1) * VGA_WIDTH +
-            (previous_length - current_length);
+            previous_length;
 
-        vga_line_hard_break[row - 1] = 1;
+        /*
+        * The current line's hard break becomes the
+        * hard break of the merged line.
+        */
+        editor_set_hard_break(
+            row - 1,
+            editor_has_hard_break(row)
+        );
+
         vga_sync_line_state(row - 1);
 
         vga_preferred_column =
