@@ -13,7 +13,7 @@ void editor_set_preferred_column(unsigned int column);
 
 /* Line state */
 unsigned int editor_get_line_length(unsigned int row);
-int editor_has_hard_break(unsigned int row);
+unsigned int editor_has_hard_break(unsigned int row);
 
 void editor_set_line_length(
     unsigned int row,
@@ -22,7 +22,7 @@ void editor_set_line_length(
 
 void editor_set_hard_break(
     unsigned int row,
-    int hard_break
+    unsigned int hard_break
 );
 
 /* Text */

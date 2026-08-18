@@ -69,6 +69,50 @@ i686-elf-gcc ^
 -o build\editor.o
 if errorlevel 1 goto :error
 
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
+-c editor\editor_text.c ^
+-o build\editor_text.o
+if errorlevel 1 goto :error
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
+-c editor\editor_cursor.c ^
+-o build\editor_cursor.o
+if errorlevel 1 goto :error
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
+-c editor\editor_lines.c ^
+-o build\editor_lines.o
+if errorlevel 1 goto :error
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
+-c editor\editor_render.c ^
+-o build\editor_render.o
+if errorlevel 1 goto :error
+
 i686-elf-ld ^
 -m elf_i386 ^
 -T linker\linker.ld ^
@@ -77,7 +121,11 @@ build\kernel_entry.o ^
 build\kernel.o ^
 build\vga.o ^
 build\keyboard.o ^
-build\editor.o
+build\editor.o ^
+build\editor_text.o ^
+build\editor_cursor.o ^
+build\editor_lines.o ^
+build\editor_render.o
 
 i686-elf-objcopy ^
 -O binary ^

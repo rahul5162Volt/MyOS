@@ -1,3 +1,10 @@
+#include "editor.h"
+#include "editor_state.h"
+#include "editor_text.h"
+#include "editor_cursor.h"
+#include "editor_lines.h"
+#include "editor_render.h"
+
 #define EDITOR_MAX_LINES 25
 #define EDITOR_MAX_COLUMNS 80
 
@@ -6,18 +13,11 @@
 #define VGA_HEIGHT 25
 #define VGA_ATTRIBUTE 0x07
 
-typedef struct
-{
-    char text[EDITOR_MAX_COLUMNS];
-    unsigned int length;
-    unsigned int hard_break;
-} EditorLine;
+EditorLine editor_lines[EDITOR_MAX_LINES];
 
-static EditorLine editor_lines[EDITOR_MAX_LINES];
-
-static unsigned int editor_cursor_row = 0;
-static unsigned int editor_cursor_column = 0;
-static unsigned int editor_preferred_column = 0;
+unsigned int editor_cursor_row = 0;
+unsigned int editor_cursor_column = 0;
+unsigned int editor_preferred_column = 0;
 
 void editor_init(void)
 {
