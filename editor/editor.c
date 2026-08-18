@@ -235,20 +235,97 @@ void editor_insert_char(char character)
 
 void editor_newline(void)
 {
+    EditorLine *current_line;
+    EditorLine *next_line;
+
+    unsigned int column;
+    unsigned int move_count;
+
     if (editor_cursor_row >= EDITOR_MAX_LINES - 1)
         return;
 
-    /*
-     * The current line is terminated by Enter.
-     */
-    editor_lines[editor_cursor_row].hard_break = 1;
+    current_line =
+        &editor_lines[editor_cursor_row];
+
+    next_line =
+        &editor_lines[editor_cursor_row + 1];
 
     /*
-     * Move to the next line.
+     * Move all lines below the current line
+     * down by one.
+     */
+    move_count =
+        EDITOR_MAX_LINES - 1;
+
+    while (move_count > editor_cursor_row + 1)
+    {
+        editor_lines[move_count] =
+            editor_lines[move_count - 1];
+
+        move_count--;
+    }
+
+    /*
+     * Re-acquire pointers because the array
+     * contents have been shifted.
+     */
+    current_line =
+        &editor_lines[editor_cursor_row];
+
+    next_line =
+        &editor_lines[editor_cursor_row + 1];
+
+    /*
+     * Move the text after the cursor to the
+     * beginning of the new line.
+     */
+    column = editor_cursor_column;
+
+    next_line->length = 0;
+
+    while (column < current_line->length)
+    {
+        next_line->text[next_line->length] =
+            current_line->text[column];
+
+        next_line->length++;
+
+        column++;
+    }
+
+    /*
+     * Clear the moved characters from the
+     * current line.
+     */
+    column = editor_cursor_column;
+
+    while (column < current_line->length)
+    {
+        current_line->text[column] = ' ';
+        column++;
+    }
+
+    /*
+     * The current line is now explicitly
+     * terminated by Enter.
+     */
+    current_line->length =
+        editor_cursor_column;
+
+    current_line->hard_break = 1;
+
+    /*
+     * The newly created line is not itself
+     * terminated by Enter.
+     */
+    next_line->hard_break = 0;
+
+    /*
+     * Move cursor to the beginning of the
+     * new line.
      */
     editor_cursor_row++;
     editor_cursor_column = 0;
-
     editor_preferred_column = 0;
 }
 
