@@ -101,13 +101,6 @@ static void vga_copy_row(unsigned int source, unsigned int destination)
 
         column++;
     }
-
-    vga_line_lengths[destination] =
-        vga_line_lengths[source];
-
-    vga_line_hard_break[destination] =
-        vga_line_hard_break[source];
-    vga_sync_line_state(destination);
 }
 
 static void vga_scroll(void)
@@ -486,9 +479,19 @@ void vga_backspace(void)
             index++;
         }
 
+        /*
+         * Update VGA state first.
+         */
         vga_line_lengths[row]--;
+
+        /*
+         * Synchronize VGA state -> editor state.
+         */
         vga_sync_line_state(row);
 
+        /*
+         * Clear the now-unused final cell.
+         */
         vga_write_cell(
             row,
             editor_get_line_length(row),
@@ -504,8 +507,11 @@ void vga_backspace(void)
     }
 
     /*
-     * At column zero, merge with the previous line
-     * only when there is an actual hard line break.
+     * Cursor is at column zero.
+     *
+     * If the previous physical row was created by
+     * Enter, remove that hard break and merge the
+     * current line back into it.
      */
     if (row > 0 && editor_has_hard_break(row - 1))
     {
@@ -517,6 +523,9 @@ void vga_backspace(void)
 
         unsigned int index = 0;
 
+        /*
+         * Append the current line to the previous line.
+         */
         while (index < current_length &&
                previous_length < VGA_WIDTH)
         {
@@ -532,14 +541,33 @@ void vga_backspace(void)
             index++;
         }
 
-        editor_set_line_length(
-            row - 1,
-            previous_length
-        );
+        /*
+         * IMPORTANT:
+         *
+         * Update the VGA-side state first.
+         * vga_sync_line_state() copies this state
+         * into the editor layer.
+         */
+        vga_line_lengths[row - 1] =
+            (unsigned char)previous_length;
 
         /*
-        * Shift everything below the deleted line upward.
-        */
+         * The hard-break state of the current line
+         * becomes the hard-break state of the merged
+         * line.
+         */
+        vga_line_hard_break[row - 1] =
+            (unsigned char)editor_has_hard_break(row);
+
+        /*
+         * Synchronize the merged line.
+         */
+        vga_sync_line_state(row - 1);
+
+        /*
+         * Remove the current physical row by shifting
+         * everything below it upward.
+         */
         {
             unsigned int shift_row = row;
 
@@ -547,8 +575,7 @@ void vga_backspace(void)
             {
                 vga_copy_row(
                     shift_row + 1,
-                    shift_row
-                );
+                    shift_row);
 
                 shift_row++;
             }
@@ -557,22 +584,11 @@ void vga_backspace(void)
         }
 
         /*
-        * Cursor returns to the end of the merged line.
-        */
+         * Cursor returns to the end of the merged line.
+         */
         vga_cursor =
             (row - 1) * VGA_WIDTH +
             previous_length;
-
-        /*
-        * The current line's hard break becomes the
-        * hard break of the merged line.
-        */
-        editor_set_hard_break(
-            row - 1,
-            editor_has_hard_break(row)
-        );
-
-        vga_sync_line_state(row - 1);
 
         vga_preferred_column =
             vga_column();
@@ -584,15 +600,24 @@ void vga_backspace(void)
     /*
      * Wrapped-line boundary.
      *
-     * Move to the end of the previous physical row.
+     * The previous physical row is full, so this is
+     * a soft wrap rather than an Enter-created line.
+     *
+     * Move to the final character of that row and
+     * delete it.
      */
-    if (editor_get_line_length(row - 1) >= VGA_WIDTH)
+    if (row > 0 &&
+        editor_get_line_length(row - 1) >= VGA_WIDTH)
     {
         vga_cursor =
             (row - 1) * VGA_WIDTH +
             (VGA_WIDTH - 1);
 
+        /*
+         * Update VGA-side state first.
+         */
         vga_line_lengths[row - 1]--;
+
         vga_sync_line_state(row - 1);
 
         vga_write_cell(
@@ -608,8 +633,11 @@ void vga_backspace(void)
     }
 
     /*
-     * Empty/new physical line:
-     * place cursor at the end of the previous line.
+     * Empty/new physical line.
+     *
+     * There is no hard break and the previous line is
+     * not a wrapped full line. Simply move the cursor
+     * to the end of the previous line.
      */
     vga_cursor =
         (row - 1) * VGA_WIDTH +
