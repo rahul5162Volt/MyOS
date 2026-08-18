@@ -148,56 +148,7 @@ void editor_set_char(
     editor_lines[row].text[column] = character;
 }
 
-void editor_render(void)
-{
-    unsigned int row = 0;
-
-    while (row < EDITOR_MAX_LINES &&
-           row < VGA_HEIGHT)
-    {
-        unsigned int column = 0;
-        unsigned int length =
-            editor_lines[row].length;
-
-        while (column < VGA_WIDTH)
-        {
-            unsigned int offset =
-                (row * VGA_WIDTH + column) * 2;
-
-            char character = ' ';
-
-            if (column < length)
-            {
-                character =
-                    editor_lines[row].text[column];
-            }
-
-            VGA_MEMORY[offset] =
-                (unsigned char)character;
-
-            /*
-             * Software cursor.
-             */
-            if (row == editor_cursor_row &&
-                column == editor_cursor_column)
-            {
-                /*
-                 * Black text on white background.
-                 */
-                VGA_MEMORY[offset + 1] = 0x70;
-            }
-            else
-            {
-                VGA_MEMORY[offset + 1] =
-                    VGA_ATTRIBUTE;
-            }
-
-            column++;
-        }
-
-        row++;
-    }
-}
+//editor_render()
 
 void editor_insert_char(char character)
 {
