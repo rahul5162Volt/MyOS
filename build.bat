@@ -5,7 +5,7 @@ echo Building MyOS...
 
 if not exist build mkdir build
 
-set KERNEL_SECTORS=8
+set KERNEL_SECTORS=16
 set /a KERNEL_BYTES=KERNEL_SECTORS * 512
 
 nasm -f bin boot\boot.asm -o build\boot.bin
@@ -25,6 +25,17 @@ fsutil file seteof build\stage2.bin 512
 if errorlevel 1 goto :error
 
 nasm -f elf32 kernel\kernel_entry.asm -o build\kernel_entry.o
+if errorlevel 1 goto :error
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
+-c kernel\kernel.c ^
+-o build\kernel.o
 if errorlevel 1 goto :error
 
 i686-elf-gcc ^

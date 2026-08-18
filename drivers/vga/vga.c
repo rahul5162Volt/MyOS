@@ -12,6 +12,8 @@
 
 static unsigned int vga_cursor = 0;
 
+static void vga_disable_cursor(void);
+
 static unsigned char vga_line_lengths[VGA_HEIGHT];
 static unsigned char vga_line_hard_break[VGA_HEIGHT];
 
@@ -81,7 +83,9 @@ static void vga_clear_row(unsigned int row)
     vga_sync_line_state(row);
 }
 
-static void vga_copy_row(unsigned int source, unsigned int destination)
+static void vga_copy_row(
+    unsigned int source,
+    unsigned int destination)
 {
     unsigned int column = 0;
 
@@ -101,6 +105,18 @@ static void vga_copy_row(unsigned int source, unsigned int destination)
 
         column++;
     }
+
+    /*
+     * Copy editor metadata together with the
+     * physical VGA row.
+     */
+    vga_line_lengths[destination] =
+        vga_line_lengths[source];
+
+    vga_line_hard_break[destination] =
+        vga_line_hard_break[source];
+
+    vga_sync_line_state(destination);
 }
 
 static void vga_scroll(void)
@@ -133,6 +149,8 @@ void vga_clear(void)
 
     vga_cursor = 0;
     vga_preferred_column = 0;
+
+    vga_disable_cursor();
 
     vga_update_cursor();
 }
@@ -649,136 +667,54 @@ void vga_backspace(void)
     vga_update_cursor();
 }
 
-void vga_cursor_left(void)
-{
-    unsigned int row = vga_row();
-    unsigned int column = vga_column();
-
-    if (row >= VGA_HEIGHT)
-    {
-        vga_cursor =
-            (VGA_HEIGHT - 1) * VGA_WIDTH;
-
-        row = VGA_HEIGHT - 1;
-        column = 0;
-    }
-
-    if (column > 0)
-    {
-        vga_cursor--;
-    }
-    else if (row > 0)
-    {
-        unsigned int previous_length =
-            editor_get_line_length(row - 1);
-
-        if (previous_length >= VGA_WIDTH)
-            vga_cursor =
-                (row - 1) * VGA_WIDTH + (VGA_WIDTH - 1);
-        else
-            vga_cursor =
-                (row - 1) * VGA_WIDTH + previous_length;
-    }
-
-    vga_preferred_column =
-        vga_column();
-
-    vga_update_cursor();
-}
-
-void vga_cursor_right(void)
-{
-    unsigned int row = vga_row();
-    unsigned int column = vga_column();
-
-    if (row >= VGA_HEIGHT)
-        return;
-
-    if (column < editor_get_line_length(row))
-    {
-        vga_cursor++;
-    }
-    else if (row < VGA_HEIGHT - 1 &&
-             editor_get_line_length(row) == VGA_WIDTH)
-    {
-        vga_cursor =
-            (row + 1) * VGA_WIDTH;
-    }
-
-    vga_preferred_column =
-        vga_column();
-
-    vga_update_cursor();
-}
-
-void vga_cursor_up(void)
-{
-    unsigned int row = vga_row();
-
-    if (row == 0)
-        return;
-
-    row--;
-
-    unsigned int line_length = editor_get_line_length(row);
-
-    if (vga_preferred_column > line_length)
-        vga_cursor = row * VGA_WIDTH + line_length;
-    else
-        vga_cursor = row * VGA_WIDTH + vga_preferred_column;
-
-    vga_update_cursor();
-}
-
-void vga_cursor_down(void)
-{
-    unsigned int row = vga_row();
-
-    if (row >= VGA_HEIGHT - 1)
-        return;
-
-    row++;
-
-    unsigned int line_length = editor_get_line_length(row);
-
-    if (vga_preferred_column > line_length)
-        vga_cursor = row * VGA_WIDTH + line_length;
-    else
-        vga_cursor = row * VGA_WIDTH + vga_preferred_column;
-
-    vga_update_cursor();
-}
-
 void vga_update_cursor(void)
 {
-    unsigned short position =
-        (unsigned short)vga_cursor;
+}
 
-    /*
-     * Safety clamp: VGA text mode has exactly
-     * 80 * 25 = 2000 character positions.
-     */
-    if (position >= VGA_WIDTH * VGA_HEIGHT)
+static void vga_disable_cursor(void)
+{
+    outb(VGA_CURSOR_INDEX_PORT, 0x0A);
+    outb(VGA_CURSOR_DATA_PORT, 0x20);
+
+    outb(VGA_CURSOR_INDEX_PORT, 0x0B);
+    outb(VGA_CURSOR_DATA_PORT, 0x00);
+}
+
+void vga_render_editor(void)
+{
+    unsigned int row = 0;
+
+    while (row < VGA_HEIGHT)
     {
-        position =
-            (VGA_WIDTH * VGA_HEIGHT) - 1;
+        unsigned int column = 0;
+        unsigned int length =
+            editor_get_line_length(row);
 
-        vga_cursor = position;
+        while (column < VGA_WIDTH)
+        {
+            char character = ' ';
+
+            if (column < length)
+                character = editor_get_char(row, column);
+
+            vga_write_cell(
+                row,
+                column,
+                character
+            );
+
+            column++;
+        }
+
+        row++;
     }
 
-    outb(
-        VGA_CURSOR_INDEX_PORT,
-        0x0F);
+    vga_cursor =
+        editor_get_cursor_row() * VGA_WIDTH +
+        editor_get_cursor_column();
 
-    outb(
-        VGA_CURSOR_DATA_PORT,
-        (unsigned char)(position & 0xFF));
+    vga_preferred_column =
+        editor_get_preferred_column();
 
-    outb(
-        VGA_CURSOR_INDEX_PORT,
-        0x0E);
-
-    outb(
-        VGA_CURSOR_DATA_PORT,
-        (unsigned char)((position >> 8) & 0xFF));
+    vga_update_cursor();
 }

@@ -3,6 +3,7 @@
 
 void editor_init(void);
 
+/* Cursor */
 unsigned int editor_get_cursor_row(void);
 unsigned int editor_get_cursor_column(void);
 unsigned int editor_get_preferred_column(void);
@@ -10,10 +11,42 @@ unsigned int editor_get_preferred_column(void);
 void editor_set_cursor(unsigned int row, unsigned int column);
 void editor_set_preferred_column(unsigned int column);
 
+/* Line state */
 unsigned int editor_get_line_length(unsigned int row);
 int editor_has_hard_break(unsigned int row);
 
-void editor_set_line_length(unsigned int row, unsigned int length);
-void editor_set_hard_break(unsigned int row, int hard_break);
+void editor_set_line_length(
+    unsigned int row,
+    unsigned int length
+);
+
+void editor_set_hard_break(
+    unsigned int row,
+    int hard_break
+);
+
+/* Text */
+char editor_get_char(
+    unsigned int row,
+    unsigned int column
+);
+
+void editor_set_char(
+    unsigned int row,
+    unsigned int column,
+    char character
+);
+
+void editor_insert_char(char character);
+void editor_newline(void);
+
+void editor_cursor_left(void);
+void editor_cursor_right(void);
+void editor_cursor_up(void);
+void editor_cursor_down(void);
+
+void editor_backspace(void);
+
+void editor_render(void);
 
 #endif
