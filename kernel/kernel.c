@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "editor_edit.h"
 #include "keyboard/keyboard.h"
 
 void kernel_main(void)
@@ -10,7 +11,7 @@ void kernel_main(void)
     editor_insert_char('O');
     editor_insert_char('S');
 
-    editor_newline();
+    editor_insert_newline();
 
     editor_insert_char('E');
     editor_insert_char('d');
@@ -54,12 +55,12 @@ void kernel_main(void)
                 }
                 else if (keyboard_is_enter(scancode))
                 {
-                    editor_newline();
+                    editor_insert_newline();
                     editor_render();
                 }
                 else if (keyboard_is_backspace(scancode))
                 {
-                    editor_backspace();
+                    editor_delete_backward();
                     editor_render();
                 }
                 else

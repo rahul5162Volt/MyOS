@@ -38,14 +38,13 @@ void editor_set_char(
 );
 
 void editor_insert_char(char character);
-void editor_newline(void);
+void editor_insert_newline(void);
+void editor_delete_backward(void);
 
 void editor_cursor_left(void);
 void editor_cursor_right(void);
 void editor_cursor_up(void);
 void editor_cursor_down(void);
-
-void editor_backspace(void);
 
 void editor_render(void);
 
