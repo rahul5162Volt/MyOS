@@ -1,5 +1,6 @@
 #include "editor_edit.h"
 #include "editor_state.h"
+#include "editor_text.h"
 
 void editor_insert_newline(void)
 {
@@ -221,5 +222,124 @@ void editor_delete_backward(void)
             line->text[index] = ' ';
             index++;
         }
+    }
+}
+
+void editor_delete_forward(void)
+{
+    EditorLine *line;
+    unsigned int index;
+
+    if (editor_cursor_row >= EDITOR_MAX_LINES)
+        return;
+
+    line =
+        &editor_lines[editor_cursor_row];
+
+    /*
+     * Delete the character at the cursor.
+     */
+    if (editor_cursor_column < line->length)
+    {
+        index = editor_cursor_column;
+
+        while (index < line->length - 1)
+        {
+            line->text[index] =
+                line->text[index + 1];
+
+            index++;
+        }
+
+        line->length--;
+
+        line->text[line->length] = ' ';
+
+        return;
+    }
+
+    /*
+     * At the end of the current line.
+     *
+     * If this line has a following logical line,
+     * merge that line into the current line.
+     */
+    if (editor_cursor_column == line->length &&
+        editor_cursor_row < EDITOR_MAX_LINES - 1)
+    {
+        EditorLine *next_line =
+            &editor_lines[
+                editor_cursor_row + 1
+            ];
+
+        unsigned int current_length =
+            line->length;
+
+        /*
+         * Only merge when the current line
+         * actually ends with Enter.
+         */
+        if (!line->hard_break)
+            return;
+
+        /*
+         * Make sure both lines fit.
+         */
+        if (current_length + next_line->length >
+            EDITOR_MAX_COLUMNS)
+        {
+            return;
+        }
+
+        /*
+         * Append the next line.
+         */
+        index = 0;
+
+        while (index < next_line->length)
+        {
+            line->text[
+                current_length + index
+            ] =
+                next_line->text[index];
+
+            index++;
+        }
+
+        line->length =
+            current_length + next_line->length;
+
+        /*
+         * The newline between the two lines
+         * has been deleted.
+         */
+        line->hard_break =
+            next_line->hard_break;
+
+        /*
+         * Remove the now-unused line.
+         */
+        next_line->length = 0;
+        next_line->hard_break = 0;
+
+        index = 0;
+
+        while (index < EDITOR_MAX_COLUMNS)
+        {
+            next_line->text[index] = ' ';
+            index++;
+        }
+    }
+}
+
+void editor_insert_tab(void)
+{
+    unsigned int spaces = 4;
+    unsigned int count = 0;
+
+    while (count < spaces)
+    {
+        editor_insert_char(' ');
+        count++;
     }
 }

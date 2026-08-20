@@ -1,5 +1,6 @@
 #include "editor.h"
-#include "editor_edit.h"
+#include "editor_input.h"
+#include "editor_render.h"
 #include "keyboard/keyboard.h"
 
 void kernel_main(void)
@@ -33,49 +34,8 @@ void kernel_main(void)
 
             if (!keyboard_is_release(scancode))
             {
-                if (keyboard_is_arrow_left(scancode))
-                {
-                    editor_cursor_left();
-                    editor_render();
-                }
-                else if (keyboard_is_arrow_right(scancode))
-                {
-                    editor_cursor_right();
-                    editor_render();
-                }
-                else if (keyboard_is_arrow_up(scancode))
-                {
-                    editor_cursor_up();
-                    editor_render();
-                }
-                else if (keyboard_is_arrow_down(scancode))
-                {
-                    editor_cursor_down();
-                    editor_render();
-                }
-                else if (keyboard_is_enter(scancode))
-                {
-                    editor_insert_newline();
-                    editor_render();
-                }
-                else if (keyboard_is_backspace(scancode))
-                {
-                    editor_delete_backward();
-                    editor_render();
-                }
-                else
-                {
-                    char character =
-                        keyboard_scancode_to_ascii(
-                            scancode
-                        );
-
-                    if (character != '\0')
-                    {
-                        editor_insert_char(character);
-                        editor_render();
-                    }
-                }
+                editor_handle_key(scancode);
+                editor_render();
             }
         }
     }

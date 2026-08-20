@@ -15,12 +15,6 @@
 #define VGA_HEIGHT 25
 #define VGA_ATTRIBUTE 0x07
 
-EditorLine editor_lines[EDITOR_MAX_LINES];
-
-unsigned int editor_cursor_row = 0;
-unsigned int editor_cursor_column = 0;
-unsigned int editor_preferred_column = 0;
-
 void editor_init(void)
 {
     unsigned int row = 0;

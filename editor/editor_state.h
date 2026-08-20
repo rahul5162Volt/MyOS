@@ -17,4 +17,10 @@ extern unsigned int editor_cursor_row;
 extern unsigned int editor_cursor_column;
 extern unsigned int editor_preferred_column;
 
+extern unsigned int editor_selection_active;
+
+extern unsigned int editor_selection_anchor_active;
+extern unsigned int editor_selection_anchor_row;
+extern unsigned int editor_selection_anchor_column;
+
 #endif

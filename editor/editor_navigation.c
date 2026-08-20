@@ -9,7 +9,7 @@ void editor_cursor_left(void)
         return;
 
     /*
-     * Move normally inside the current line.
+     * Move inside the current line.
      */
     if (editor_cursor_column > 0)
     {
@@ -22,7 +22,7 @@ void editor_cursor_left(void)
     }
 
     /*
-     * At column 0.
+     * Already at the beginning of the first line.
      */
     if (editor_cursor_row == 0)
         return;
@@ -31,18 +31,17 @@ void editor_cursor_left(void)
         &editor_lines[editor_cursor_row - 1];
 
     /*
-     * Cross the line boundary only when
-     * the previous line was explicitly terminated
-     * with Enter.
+     * Only cross the line boundary when
+     * Enter created that boundary.
      */
-    if (previous_line->hard_break == 0)
+    if (!previous_line->hard_break)
         return;
 
     editor_cursor_row--;
 
     /*
-     * Position at the actual end of the previous
-     * line's text.
+     * Put the cursor at the actual end of
+     * the previous line.
      */
     editor_cursor_column =
         previous_line->length;
@@ -62,7 +61,7 @@ void editor_cursor_right(void)
         &editor_lines[editor_cursor_row];
 
     /*
-     * Normal movement within the line.
+     * Move through the actual text.
      */
     if (editor_cursor_column < line->length)
     {
@@ -75,13 +74,13 @@ void editor_cursor_right(void)
     }
 
     /*
-     * At the end of the line.
-     * Cross to the next line only when
-     * this line ends with Enter.
+     * At the logical end of the line.
+     *
+     * Cross only when Enter actually
+     * separates this line from the next.
      */
-    if (editor_cursor_column == line->length &&
-        editor_cursor_row < EDITOR_MAX_LINES - 1 &&
-        line->hard_break)
+    if (line->hard_break &&
+        editor_cursor_row < EDITOR_MAX_LINES - 1)
     {
         editor_cursor_row++;
         editor_cursor_column = 0;

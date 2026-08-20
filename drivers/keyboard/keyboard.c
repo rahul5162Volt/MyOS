@@ -8,18 +8,30 @@
 #define KEYBOARD_RIGHT_SHIFT_SCANCODE 0x36
 #define KEYBOARD_LEFT_SHIFT_RELEASE   0xAA
 #define KEYBOARD_RIGHT_SHIFT_RELEASE  0xB6
+
 #define KEYBOARD_CAPS_LOCK_SCANCODE   0x3A
 #define KEYBOARD_CAPS_LOCK_RELEASE    0xBA
+
+#define KEYBOARD_LEFT_CTRL_SCANCODE  0x1D
+#define KEYBOARD_LEFT_CTRL_RELEASE   0x9D
 
 #define KEYBOARD_ARROW_LEFT   0x4B
 #define KEYBOARD_ARROW_RIGHT  0x4D
 #define KEYBOARD_ARROW_UP     0x48
 #define KEYBOARD_ARROW_DOWN   0x50
 
+#define KEYBOARD_DELETE 0x53
+
+#define KEYBOARD_HOME 0x47
+#define KEYBOARD_END  0x4F
+
 static int keyboard_left_shift_pressed = 0;
 static int keyboard_right_shift_pressed = 0;
+
 static int keyboard_caps_lock = 0;
 static int keyboard_extended = 0;
+
+static int keyboard_left_ctrl_pressed = 0;
 
 static unsigned char inb(unsigned short port)
 {
@@ -119,9 +131,12 @@ char keyboard_scancode_to_ascii(unsigned char scancode)
 
 int keyboard_is_enter(unsigned char scancode) { return scancode == 0x1C; }
 int keyboard_is_backspace(unsigned char scancode) { return scancode == 0x0E; }
-int keyboard_is_shift_press(unsigned char scancode)
+int keyboard_is_delete(unsigned char scancode) { return scancode == KEYBOARD_DELETE; }
+
+int keyboard_is_shift_pressed(void)
 {
-    return scancode == KEYBOARD_LEFT_SHIFT_SCANCODE || scancode == KEYBOARD_RIGHT_SHIFT_SCANCODE;
+    return keyboard_left_shift_pressed ||
+           keyboard_right_shift_pressed;
 }
 int keyboard_is_shift_release(unsigned char scancode)
 {
@@ -141,9 +156,28 @@ void keyboard_update_state(unsigned char scancode)
         keyboard_right_shift_pressed = 0;
     else if (scancode == KEYBOARD_CAPS_LOCK_SCANCODE)
         keyboard_caps_lock = !keyboard_caps_lock;
+    else if (scancode == KEYBOARD_LEFT_CTRL_SCANCODE)
+        keyboard_left_ctrl_pressed = 1;
+    else if (scancode == KEYBOARD_LEFT_CTRL_RELEASE)
+        keyboard_left_ctrl_pressed = 0;
 }
 
 int keyboard_is_arrow_left(unsigned char scancode) { return scancode == KEYBOARD_ARROW_LEFT; }
 int keyboard_is_arrow_right(unsigned char scancode) { return scancode == KEYBOARD_ARROW_RIGHT; }
 int keyboard_is_arrow_up(unsigned char scancode) { return scancode == KEYBOARD_ARROW_UP; }
 int keyboard_is_arrow_down(unsigned char scancode) { return scancode == KEYBOARD_ARROW_DOWN; }
+
+int keyboard_is_home(unsigned char scancode)
+{
+    return scancode == KEYBOARD_HOME;
+}
+
+int keyboard_is_end(unsigned char scancode)
+{
+    return scancode == KEYBOARD_END;
+}
+
+int keyboard_is_ctrl_pressed(void)
+{
+    return keyboard_left_ctrl_pressed;
+}

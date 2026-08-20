@@ -3,5 +3,7 @@
 
 void editor_insert_newline(void);
 void editor_delete_backward(void);
+void editor_delete_forward(void);
+void editor_insert_tab(void);
 
 #endif
