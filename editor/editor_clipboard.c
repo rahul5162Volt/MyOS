@@ -337,3 +337,26 @@ void editor_clipboard_paste(void)
         row++;
     }
 }
+
+void editor_clipboard_cut_selection(void)
+{
+    if (!editor_selection_is_active())
+        return;
+
+    if (!editor_selection_has_anchor())
+        return;
+
+    /*
+     * Copy the selection into the clipboard first.
+     */
+    editor_clipboard_copy_selection();
+
+    /*
+     * Delete the selected text.
+     *
+     * editor_selection_delete() also places
+     * the cursor at the beginning of the
+     * deleted selection and clears the selection.
+     */
+    editor_selection_delete();
+}

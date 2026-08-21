@@ -7,6 +7,8 @@ unsigned int editor_clipboard_has_data(void);
 
 void editor_clipboard_copy_selection(void);
 
+void editor_clipboard_cut_selection(void);
+
 void editor_clipboard_paste(void);
 
 #endif

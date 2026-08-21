@@ -17,6 +17,13 @@ void editor_handle_key(unsigned char scancode)
         return;
     }
     if (keyboard_is_ctrl_pressed() &&
+        scancode == 0x2D)
+    {
+        editor_clipboard_cut_selection();
+
+        return;
+    }
+    if (keyboard_is_ctrl_pressed() &&
         scancode == 0x2F)
     {
         editor_clipboard_paste();
