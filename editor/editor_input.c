@@ -4,10 +4,25 @@
 #include "editor_selection.h"
 #include "editor_cursor.h"
 #include "editor_text.h"
+#include "editor_clipboard.h"
 #include "keyboard/keyboard.h"
 
 void editor_handle_key(unsigned char scancode)
 {
+    if (keyboard_is_ctrl_pressed() &&
+        scancode == 0x2E)
+    {
+        editor_clipboard_copy_selection();
+
+        return;
+    }
+    if (keyboard_is_ctrl_pressed() &&
+        scancode == 0x2F)
+    {
+        editor_clipboard_paste();
+
+        return;
+    }
     if (keyboard_is_ctrl_pressed() &&
         scancode == 0x1E)
     {

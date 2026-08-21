@@ -164,6 +164,17 @@ i686-elf-gcc ^
 -fno-pie ^
 -I drivers ^
 -I editor ^
+-c editor\editor_clipboard.c ^
+-o build\editor_clipboard.o
+if errorlevel 1 goto failed
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
 -c editor\editor_render.c ^
 -o build\editor_render.o
 if errorlevel 1 goto failed
@@ -185,6 +196,7 @@ build\editor_lines.o ^
 build\editor_edit.o ^
 build\editor_selection.o ^
 build\editor_input.o ^
+build\editor_clipboard.o ^
 build\editor_render.o
 if errorlevel 1 goto failed
 
