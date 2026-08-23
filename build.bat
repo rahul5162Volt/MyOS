@@ -5,7 +5,7 @@ echo Building MyOS...
 
 if not exist build mkdir build
 
-set KERNEL_SECTORS=20
+set KERNEL_SECTORS=32
 set /a KERNEL_BYTES=KERNEL_SECTORS * 512
 
 nasm -f bin boot\boot.asm -o build\boot.bin
@@ -175,6 +175,17 @@ i686-elf-gcc ^
 -fno-pie ^
 -I drivers ^
 -I editor ^
+-c editor\editor_undo.c ^
+-o build\editor_undo.o
+if errorlevel 1 goto failed
+
+i686-elf-gcc ^
+-m32 ^
+-ffreestanding ^
+-fno-stack-protector ^
+-fno-pie ^
+-I drivers ^
+-I editor ^
 -c editor\editor_render.c ^
 -o build\editor_render.o
 if errorlevel 1 goto failed
@@ -197,6 +208,7 @@ build\editor_edit.o ^
 build\editor_selection.o ^
 build\editor_input.o ^
 build\editor_clipboard.o ^
+build\editor_undo.o ^
 build\editor_render.o
 if errorlevel 1 goto failed
 
