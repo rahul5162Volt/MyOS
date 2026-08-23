@@ -19,6 +19,14 @@ void editor_handle_key(unsigned char scancode)
         return;
     }
     if (keyboard_is_ctrl_pressed() &&
+        scancode == 0x15)
+    {
+        if (editor_undo_can_redo())
+            editor_redo();
+
+        return;
+    }
+    if (keyboard_is_ctrl_pressed() &&
         scancode == 0x2E)
     {
         editor_clipboard_copy_selection();

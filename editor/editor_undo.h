@@ -9,4 +9,8 @@ unsigned int editor_undo_can_undo(void);
 
 void editor_undo(void);
 
+unsigned int editor_undo_can_redo(void);
+
+void editor_redo(void);
+
 #endif
