@@ -1,5 +1,6 @@
 #include "editor.h"
 #include "editor_input.h"
+#include "../editor/editor_undo.h"
 #include "editor_render.h"
 #include "keyboard/keyboard.h"
 

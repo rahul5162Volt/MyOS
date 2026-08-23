@@ -5,10 +5,19 @@
 #include "editor_cursor.h"
 #include "editor_text.h"
 #include "editor_clipboard.h"
+#include "editor_undo.h"
 #include "keyboard/keyboard.h"
 
 void editor_handle_key(unsigned char scancode)
 {
+    if (keyboard_is_ctrl_pressed() &&
+        scancode == 0x2C)
+    {
+        if (editor_undo_can_undo())
+            editor_undo();
+
+        return;
+    }
     if (keyboard_is_ctrl_pressed() &&
         scancode == 0x2E)
     {
@@ -19,6 +28,9 @@ void editor_handle_key(unsigned char scancode)
     if (keyboard_is_ctrl_pressed() &&
         scancode == 0x2D)
     {
+        if (editor_selection_is_active())
+            editor_undo_save();
+
         editor_clipboard_cut_selection();
 
         return;
@@ -26,6 +38,9 @@ void editor_handle_key(unsigned char scancode)
     if (keyboard_is_ctrl_pressed() &&
         scancode == 0x2F)
     {
+        if (editor_clipboard_has_data())
+            editor_undo_save();
+
         editor_clipboard_paste();
 
         return;
@@ -163,6 +178,8 @@ void editor_handle_key(unsigned char scancode)
 
     if (keyboard_is_enter(scancode))
     {
+        editor_undo_save();
+
         if (editor_selection_is_active())
             editor_selection_delete();
 
@@ -173,6 +190,8 @@ void editor_handle_key(unsigned char scancode)
 
     if (keyboard_is_backspace(scancode))
     {
+        editor_undo_save();
+
         if (editor_selection_is_active())
             editor_selection_delete();
         else
@@ -183,6 +202,8 @@ void editor_handle_key(unsigned char scancode)
 
     if (keyboard_is_delete(scancode))
     {
+        editor_undo_save();
+
         if (editor_selection_is_active())
             editor_selection_delete();
         else
@@ -193,6 +214,7 @@ void editor_handle_key(unsigned char scancode)
 
     if (keyboard_is_tab(scancode))
     {
+        editor_undo_save();
         editor_insert_tab();
 
         return;
@@ -264,6 +286,8 @@ void editor_handle_key(unsigned char scancode)
 
         if (character != '\0')
         {
+            editor_undo_save();
+
             if (editor_selection_is_active())
                 editor_selection_delete();
 
