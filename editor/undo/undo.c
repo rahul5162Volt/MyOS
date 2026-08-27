@@ -1,5 +1,5 @@
-#include "editor_undo.h"
-#include "editor_state.h"
+#include "undo.h"
+#include "state.h"
 
 #define EDITOR_UNDO_MAX 4
 #define EDITOR_REDO_MAX 4

@@ -1,6 +1,6 @@
-#include "editor_edit.h"
-#include "editor_state.h"
-#include "editor_text.h"
+#include "edit.h"
+#include "state.h"
+#include "text.h"
 
 void editor_insert_newline(void)
 {
@@ -223,6 +223,169 @@ void editor_delete_backward(void)
             index++;
         }
     }
+}
+
+void editor_delete_word_backward(void)
+{
+    EditorLine *line;
+    unsigned int original_column;
+    unsigned int start_column;
+    unsigned int index;
+
+    if (editor_cursor_row >= EDITOR_MAX_LINES)
+        return;
+
+    line =
+        &editor_lines[editor_cursor_row];
+
+    original_column =
+        editor_cursor_column;
+
+    start_column =
+        editor_cursor_column;
+
+    /*
+     * Skip spaces immediately before the cursor.
+     */
+    while (start_column > 0 &&
+           line->text[start_column - 1] == ' ')
+    {
+        start_column--;
+    }
+
+    /*
+     * Move to the beginning of the word.
+     */
+    while (start_column > 0 &&
+           line->text[start_column - 1] != ' ')
+    {
+        start_column--;
+    }
+
+    /*
+     * Nothing to delete.
+     */
+    if (start_column == original_column)
+        return;
+
+    /*
+     * Remove everything between start_column
+     * and the original cursor position.
+     */
+    index = start_column;
+
+    while (index +
+           (original_column - start_column) <
+           line->length)
+    {
+        line->text[index] =
+            line->text[
+                index +
+                (original_column - start_column)
+            ];
+
+        index++;
+    }
+
+    line->length -=
+        original_column - start_column;
+
+    /*
+     * Clear the unused characters.
+     */
+    while (index <
+           line->length +
+           (original_column - start_column))
+    {
+        line->text[index] = ' ';
+        index++;
+    }
+
+    editor_cursor_column =
+        start_column;
+
+    editor_preferred_column =
+        start_column;
+}
+
+
+void editor_delete_word_forward(void)
+{
+    EditorLine *line;
+    unsigned int start_column;
+    unsigned int end_column;
+    unsigned int index;
+
+    if (editor_cursor_row >= EDITOR_MAX_LINES)
+        return;
+
+    line =
+        &editor_lines[editor_cursor_row];
+
+    start_column =
+        editor_cursor_column;
+
+    end_column =
+        editor_cursor_column;
+
+    /*
+     * Skip spaces immediately to the right.
+     */
+    while (end_column < line->length &&
+           line->text[end_column] == ' ')
+    {
+        end_column++;
+    }
+
+    /*
+     * Skip the word.
+     */
+    while (end_column < line->length &&
+           line->text[end_column] != ' ')
+    {
+        end_column++;
+    }
+
+    /*
+     * Nothing to delete.
+     */
+    if (end_column == start_column)
+        return;
+
+    /*
+     * Remove the selected word.
+     */
+    index = start_column;
+
+    while (index +
+           (end_column - start_column) <
+           line->length)
+    {
+        line->text[index] =
+            line->text[
+                index +
+                (end_column - start_column)
+            ];
+
+        index++;
+    }
+
+    line->length -=
+        end_column - start_column;
+
+    /*
+     * Clear unused characters.
+     */
+    while (index <
+           line->length +
+           (end_column - start_column))
+    {
+        line->text[index] = ' ';
+        index++;
+    }
+
+    editor_preferred_column =
+        editor_cursor_column;
 }
 
 void editor_delete_forward(void)

@@ -1,7 +1,7 @@
-#include "editor_selection.h"
-#include "editor_state.h"
-#include "editor_text.h"
-#include "editor_lines.h"
+#include "selection.h"
+#include "state.h"
+#include "text.h"
+#include "lines.h"
 
 void editor_selection_start(void)
 {

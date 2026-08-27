@@ -1,5 +1,4 @@
-#include "editor_navigation.h"
-#include "editor_state.h"
+#include "state.h"
 
 void editor_cursor_left(void)
 {

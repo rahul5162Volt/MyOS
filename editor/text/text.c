@@ -1,6 +1,6 @@
-#include "editor_text.h"
-#include "editor_state.h"
-#include "editor_edit.h"
+#include "text.h"
+#include "state.h"
+#include "edit.h"
 
 char editor_get_char(unsigned int row, unsigned int column)
 {
@@ -71,13 +71,4 @@ void editor_insert_char(char character)
 
     editor_preferred_column =
         editor_cursor_column;
-
-    /*
-     * Automatically create a new logical line
-     * when the current line becomes full.
-     */
-    if (editor_cursor_column >= EDITOR_MAX_COLUMNS)
-    {
-        editor_insert_newline();
-    }
 }

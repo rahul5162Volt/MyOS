@@ -1,9 +1,9 @@
-#include "editor_clipboard.h"
-#include "editor_selection.h"
-#include "editor_state.h"
-#include "editor_text.h"
-#include "editor_lines.h"
-#include "editor_edit.h"
+#include "clipboard.h"
+#include "selection.h"
+#include "state.h"
+#include "text.h"
+#include "lines.h"
+#include "edit.h"
 
 #define EDITOR_CLIPBOARD_MAX_LINES   EDITOR_MAX_LINES
 #define EDITOR_CLIPBOARD_MAX_COLUMNS EDITOR_MAX_COLUMNS

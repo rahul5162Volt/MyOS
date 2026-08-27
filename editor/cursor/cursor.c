@@ -1,5 +1,5 @@
-#include "editor_cursor.h"
-#include "editor_state.h"
+#include "cursor.h"
+#include "state.h"
 
 unsigned int editor_get_cursor_row(void)
 {
@@ -71,6 +71,28 @@ void editor_cursor_word_left(void)
         &editor_lines[editor_cursor_row];
 
     /*
+     * If we are at the beginning of the line,
+     * move to the previous logical line.
+     */
+    if (editor_cursor_column == 0)
+    {
+        if (editor_cursor_row == 0)
+            return;
+
+        editor_cursor_row--;
+
+        line =
+            &editor_lines[editor_cursor_row];
+
+        editor_cursor_column =
+            line->length;
+
+        /*
+         * Continue from the end of the previous line.
+         */
+    }
+
+    /*
      * Skip spaces immediately to the left.
      */
     while (editor_cursor_column > 0 &&
@@ -91,6 +113,7 @@ void editor_cursor_word_left(void)
     editor_preferred_column =
         editor_cursor_column;
 }
+
 
 void editor_cursor_word_right(void)
 {
@@ -118,6 +141,23 @@ void editor_cursor_word_right(void)
            line->text[editor_cursor_column] == ' ')
     {
         editor_cursor_column++;
+    }
+
+    /*
+     * If we reached the end of the line,
+     * move to the beginning of the next logical line.
+     */
+    if (editor_cursor_column >= line->length)
+    {
+        if (editor_cursor_row >= EDITOR_MAX_LINES - 1)
+            return;
+
+        if (!line->hard_break)
+            return;
+
+        editor_cursor_row++;
+
+        editor_cursor_column = 0;
     }
 
     editor_preferred_column =

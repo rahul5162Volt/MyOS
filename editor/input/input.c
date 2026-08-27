@@ -1,15 +1,27 @@
-#include "editor_input.h"
-
-#include "editor_edit.h"
-#include "editor_selection.h"
-#include "editor_cursor.h"
-#include "editor_text.h"
-#include "editor_clipboard.h"
-#include "editor_undo.h"
+#include "state.h"
+#include "edit.h"
+#include "selection.h"
+#include "cursor.h"
+#include "text.h"
+#include "clipboard.h"
+#include "undo.h"
 #include "keyboard/keyboard.h"
 
 void editor_handle_key(unsigned char scancode)
 {
+    if (keyboard_is_arrow_left(scancode) ||
+        keyboard_is_arrow_right(scancode) ||
+        keyboard_is_arrow_up(scancode) ||
+        keyboard_is_arrow_down(scancode) ||
+        keyboard_is_enter(scancode) ||
+        keyboard_is_backspace(scancode) ||
+        keyboard_is_delete(scancode) ||
+        keyboard_is_tab(scancode) ||
+        keyboard_is_home(scancode) ||
+        keyboard_is_end(scancode))
+    {
+        editor_undo_group_active = 0;
+    }
     if (keyboard_is_ctrl_pressed() &&
         scancode == 0x2C)
     {
@@ -196,6 +208,21 @@ void editor_handle_key(unsigned char scancode)
         return;
     }
 
+    if (keyboard_is_ctrl_pressed() &&
+        keyboard_is_backspace(scancode))
+    {
+        editor_undo_group_active = 0;
+
+        editor_undo_save();
+
+        if (editor_selection_is_active())
+            editor_selection_delete();
+        else
+            editor_delete_word_backward();
+
+        return;
+    }
+
     if (keyboard_is_backspace(scancode))
     {
         editor_undo_save();
@@ -204,6 +231,21 @@ void editor_handle_key(unsigned char scancode)
             editor_selection_delete();
         else
             editor_delete_backward();
+
+        return;
+    }
+
+    if (keyboard_is_ctrl_pressed() &&
+        keyboard_is_delete(scancode))
+    {
+        editor_undo_group_active = 0;
+
+        editor_undo_save();
+
+        if (editor_selection_is_active())
+            editor_selection_delete();
+        else
+            editor_delete_word_forward();
 
         return;
     }
@@ -294,10 +336,42 @@ void editor_handle_key(unsigned char scancode)
 
         if (character != '\0')
         {
-            editor_undo_save();
+            /*
+            * Start a new undo group when typing begins.
+            */
+            if (!editor_undo_group_active)
+            {
+                editor_undo_save();
+
+                editor_undo_group_active = 1;
+
+                editor_undo_group_row =
+                    editor_cursor_row;
+
+                editor_undo_group_column =
+                    editor_cursor_column;
+            }
 
             if (editor_selection_is_active())
+            {
                 editor_selection_delete();
+
+                /*
+                * Selection deletion is a separate editing
+                * operation, so restart the typing group.
+                */
+                editor_undo_group_active = 0;
+
+                editor_undo_save();
+
+                editor_undo_group_active = 1;
+
+                editor_undo_group_row =
+                    editor_cursor_row;
+
+                editor_undo_group_column =
+                    editor_cursor_column;
+            }
 
             editor_insert_char(character);
         }

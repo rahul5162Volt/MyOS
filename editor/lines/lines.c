@@ -1,5 +1,5 @@
-#include "editor_lines.h"
-#include "editor_state.h"
+#include "lines.h"
+#include "state.h"
 
 unsigned int editor_get_line_length(unsigned int row)
 {
