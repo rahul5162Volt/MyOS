@@ -6,6 +6,16 @@
 #define VGA_DEFAULT_ATTRIBUTE 0x07
 
 void vga_clear(void);
+
+void vga_clear_region(
+    unsigned int row,
+    unsigned int column,
+    unsigned int width,
+    unsigned int height
+);
+
+void vga_disable_cursor(void);
+
 void vga_print(const char* text);
 void vga_put_char(char character);
 void vga_print_hex8(unsigned char value);
