@@ -1,6 +1,6 @@
 #include "edit.h"
 #include "state.h"
-#include "text.h"
+#include "editor_text.h"
 
 void editor_insert_newline(void)
 {

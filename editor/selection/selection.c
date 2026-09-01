@@ -1,6 +1,6 @@
 #include "selection.h"
 #include "state.h"
-#include "text.h"
+#include "editor_text.h"
 #include "lines.h"
 
 void editor_selection_start(void)

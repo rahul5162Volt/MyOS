@@ -61,6 +61,8 @@ include_directories(
     ${MYOS_ROOT}/ui/core
     ${MYOS_ROOT}/ui/screen
     ${MYOS_ROOT}/ui/window
+    ${MYOS_ROOT}/ui/layout
+    ${MYOS_ROOT}/ui/text
     ${MYOS_ROOT}/ui/render
 )
 

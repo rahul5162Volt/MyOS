@@ -1,7 +1,7 @@
 #include "clipboard.h"
 #include "selection.h"
 #include "state.h"
-#include "text.h"
+#include "editor_text.h"
 #include "lines.h"
 #include "edit.h"
 

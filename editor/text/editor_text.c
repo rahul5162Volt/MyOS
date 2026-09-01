@@ -1,4 +1,4 @@
-#include "text.h"
+#include "editor_text.h"
 #include "state.h"
 #include "edit.h"
 

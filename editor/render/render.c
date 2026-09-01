@@ -1,5 +1,5 @@
 #include "state.h"
-#include "text.h"
+#include "editor_text.h"
 #include "lines.h"
 #include "selection.h"
 #include "vga.h"

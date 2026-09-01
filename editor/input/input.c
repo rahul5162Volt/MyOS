@@ -2,7 +2,7 @@
 #include "edit.h"
 #include "selection.h"
 #include "cursor.h"
-#include "text.h"
+#include "editor_text.h"
 #include "clipboard.h"
 #include "undo.h"
 #include "keyboard/keyboard.h"
