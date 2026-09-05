@@ -1,9 +1,10 @@
 #include "render.h"
-#include "vga.h"
+#include "ui_draw.h"
 #include "layout.h"
 #include "window.h"
 #include "screen.h"
 #include "ui_text.h"
+#include "editor.h"
 
 void ui_render_header(void)
 {
@@ -46,7 +47,12 @@ void ui_renderer_render(void)
 {
     const UI_Window* editor_window;
 
-    vga_clear();
+    unsigned int editor_row;
+    unsigned int editor_column;
+    unsigned int editor_width;
+    unsigned int editor_height;
+
+    ui_draw_clear();
 
     ui_render_header();
 
@@ -55,6 +61,33 @@ void ui_renderer_render(void)
 
     ui_window_render(
         editor_window
+    );
+
+    editor_row =
+        ui_window_content_row(
+            editor_window
+        );
+
+    editor_column =
+        ui_window_content_column(
+            editor_window
+        );
+
+    editor_width =
+        ui_window_content_width(
+            editor_window
+        );
+
+    editor_height =
+        ui_window_content_height(
+            editor_window
+        );
+
+    editor_render(
+        editor_row,
+        editor_column,
+        editor_width,
+        editor_height
     );
 
     ui_render_status();

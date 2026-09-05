@@ -1,5 +1,5 @@
 #include "window.h"
-#include "vga.h"
+#include "ui_draw.h"
 
 #define UI_WINDOW_BORDER_ATTRIBUTE 0x07
 #define UI_WINDOW_TITLE_ATTRIBUTE  0x70
@@ -52,7 +52,7 @@ void ui_window_render(
     while (column <
            window->column + window->width)
     {
-        vga_write_cell(
+        ui_draw_cell(
             row,
             column,
             '-',
@@ -76,7 +76,7 @@ void ui_window_render(
     while (column <
            window->column + window->width)
     {
-        vga_write_cell(
+        ui_draw_cell(
             row,
             column,
             '-',
@@ -95,14 +95,14 @@ void ui_window_render(
     while (row <
            window->row + window->height - 1)
     {
-        vga_write_cell(
+        ui_draw_cell(
             row,
             window->column,
             '|',
             window->border_attribute
         );
 
-        vga_write_cell(
+        ui_draw_cell(
             row,
             window->column +
                 window->width -
@@ -130,7 +130,7 @@ void ui_window_render(
                    window->width -
                    2)
         {
-            vga_write_cell(
+            ui_draw_cell(
                 window->row,
                 column,
                 *title,

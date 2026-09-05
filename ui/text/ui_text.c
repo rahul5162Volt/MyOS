@@ -1,5 +1,5 @@
 #include "ui_text.h"
-#include "vga.h"
+#include "ui_draw.h"
 
 void ui_text_init(
     UI_Text* text,
@@ -40,9 +40,9 @@ void ui_text_render(
     }
 
     while (*value != '\0' &&
-           column < VGA_WIDTH)
+           column < UI_DRAW_WIDTH)
     {
-        vga_write_cell(
+        ui_draw_cell(
             text->row,
             column,
             *value,

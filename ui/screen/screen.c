@@ -2,7 +2,7 @@
 #include "layout.h"
 #include "window.h"
 #include "ui_text.h"
-#include "vga.h"
+#include "ui_draw.h"
 
 #define UI_HEADER_ATTRIBUTE 0x1F
 #define UI_STATUS_ATTRIBUTE 0x07
@@ -21,7 +21,7 @@ void ui_screen_init(void)
         &header_panel,
         0,
         0,
-        VGA_WIDTH,
+        UI_DRAW_WIDTH,
         1,
         UI_HEADER_ATTRIBUTE
     );
@@ -30,16 +30,16 @@ void ui_screen_init(void)
         &editor_window,
         3,
         2,
-        VGA_WIDTH - 4,
-        VGA_HEIGHT - 6,
+        UI_DRAW_WIDTH - 4,
+        UI_DRAW_HEIGHT - 6,
         "Editor"
     );
 
     ui_panel_init(
         &status_panel,
-        VGA_HEIGHT - 1,
+        UI_DRAW_HEIGHT - 1,
         0,
-        VGA_WIDTH,
+        UI_DRAW_WIDTH,
         1,
         UI_STATUS_ATTRIBUTE
     );
@@ -55,14 +55,14 @@ void ui_screen_init(void)
     ui_text_init(
         &header_version,
         0,
-        VGA_WIDTH - 4,
+        UI_DRAW_WIDTH - 4,
         "v0.1",
         UI_HEADER_ATTRIBUTE
     );
 
     ui_text_init(
         &status_text,
-        VGA_HEIGHT - 1,
+        UI_DRAW_HEIGHT - 1,
         0,
         "Ready",
         UI_STATUS_ATTRIBUTE

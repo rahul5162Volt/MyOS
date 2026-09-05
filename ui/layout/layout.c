@@ -1,5 +1,5 @@
 #include "layout.h"
-#include "vga.h"
+#include "ui_draw.h"
 
 void ui_panel_init(
     UI_Panel* panel,
@@ -43,7 +43,7 @@ void ui_panel_render(
         while (column <
                panel->column + panel->width)
         {
-            vga_write_cell(
+            ui_draw_cell(
                 row,
                 column,
                 ' ',
