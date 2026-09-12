@@ -9,6 +9,7 @@ set(UI_SOURCES
     ${MYOS_ROOT}/ui/window/viewport.c
     ${MYOS_ROOT}/ui/layout/layout.c
     ${MYOS_ROOT}/ui/text/ui_text.c
+    ${MYOS_ROOT}/ui/render/ui_backend.c
     ${MYOS_ROOT}/ui/render/ui_draw.c
     ${MYOS_ROOT}/ui/render/render.c
 )

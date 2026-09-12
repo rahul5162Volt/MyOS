@@ -1,19 +1,19 @@
-#include "ui_draw.h"
 #include "ui_backend.h"
+#include "vga.h"
 
-void ui_draw_clear(void)
+void ui_backend_clear(void)
 {
-    ui_backend_clear();
+    vga_clear();
 }
 
-void ui_draw_cell(
+void ui_backend_draw_cell(
     unsigned int row,
     unsigned int column,
     char character,
     unsigned char attribute
 )
 {
-    ui_backend_draw_cell(
+    vga_write_cell(
         row,
         column,
         character,
