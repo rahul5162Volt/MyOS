@@ -73,6 +73,22 @@ protected_mode:
     cld
 
     ; Kernel entry is linked and loaded at 0x10000.
+
+    mov ax, [vbe_pitch]
+    mov [0x9000], ax
+
+    mov ax, [vbe_width]
+    mov [0x9002], ax
+
+    mov ax, [vbe_height]
+    mov [0x9004], ax
+
+    mov al, [vbe_bpp]
+    mov [0x9006], al
+
+    mov eax, [vbe_framebuffer]
+    mov [0x9008], eax
+
     mov eax, 0x10000
     jmp eax
 

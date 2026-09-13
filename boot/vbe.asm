@@ -67,6 +67,21 @@ vbe_find_mode:
     cmp ax, 0x004F
     jne vbe_fail
 
+    mov ax, word [VBE_MODE_INFO_ADDRESS + 0x10]
+    mov word [vbe_pitch], ax
+
+    mov ax, word [VBE_MODE_INFO_ADDRESS + 0x12]
+    mov word [vbe_width], ax
+
+    mov ax, word [VBE_MODE_INFO_ADDRESS + 0x14]
+    mov word [vbe_height], ax
+
+    mov al, byte [VBE_MODE_INFO_ADDRESS + 0x19]
+    mov byte [vbe_bpp], al
+
+    mov eax, dword [VBE_MODE_INFO_ADDRESS + 0x28]
+    mov dword [vbe_framebuffer], eax
+
     ; Check linear framebuffer support.
     mov ax, word [VBE_MODE_INFO_ADDRESS + 0x00]
     test ax, 0x0080
@@ -88,6 +103,20 @@ vbe_find_mode:
 
     ret
 
+vbe_pitch:
+    dw 0
+
+vbe_width:
+    dw 0
+
+vbe_height:
+    dw 0
+
+vbe_bpp:
+    db 0
+
+vbe_framebuffer:
+    dd 0
 
 vbe_fail:
     cli

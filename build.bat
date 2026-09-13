@@ -39,7 +39,7 @@ echo.
 
 qemu-system-i386 ^
     -drive format=raw,file=build-cmake\os.bin ^
-    -d int,cpu_reset,guest_errors ^
+    -d int,cpu_reset,guest_errors,in_asm ^
     -D qemu-cmake.log ^
     -no-reboot ^
     -no-shutdown
