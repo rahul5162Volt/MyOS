@@ -2,6 +2,9 @@
 
 bits 16
 
+%ifndef STAGE2_SECTORS
+%define STAGE2_SECTORS 1
+%endif
 
 start:
 
@@ -28,7 +31,7 @@ start:
     mov dl,[BOOT_DRIVE]
 
     mov ah,0x02
-    mov al,1          ; stage2 = 1 sector
+    mov al,STAGE2_SECTORS
 
     mov ch,0
     mov cl,2

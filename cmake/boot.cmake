@@ -29,11 +29,15 @@ add_custom_target(
 
 set(STAGE2_BIN ${MYOS_BUILD}/stage2.bin)
 
+math(EXPR STAGE2_BYTES "${STAGE2_SECTORS} * 512")
+
 add_custom_command(
     OUTPUT ${STAGE2_BIN}
 
     COMMAND nasm
             -D KERNEL_SECTORS=${KERNEL_SECTORS}
+            -D STAGE2_SECTORS=${STAGE2_SECTORS}
+            -I${MYOS_ROOT}/boot/
             -f bin
             ${MYOS_ROOT}/boot/stage2.asm
             -o ${STAGE2_BIN}
@@ -41,7 +45,7 @@ add_custom_command(
     COMMAND powershell
             -NoProfile
             -Command
-            "if ((Get-Item '${STAGE2_BIN}').Length -gt 512) { Write-Error 'Stage2 is too large'; exit 1 }; fsutil file seteof '${STAGE2_BIN}' 512"
+            "if ((Get-Item '${STAGE2_BIN}').Length -gt ${STAGE2_BYTES}) { Write-Error 'Stage2 is too large'; exit 1 }; fsutil file seteof '${STAGE2_BIN}' ${STAGE2_BYTES}"
 
     DEPENDS
         ${MYOS_ROOT}/boot/stage2.asm

@@ -20,3 +20,29 @@ void ui_draw_cell(
         attribute
     );
 }
+
+void ui_draw_fill_rect(
+    unsigned int row,
+    unsigned int column,
+    unsigned int width,
+    unsigned int height,
+    char character,
+    unsigned char attribute
+)
+{
+    unsigned int y;
+    unsigned int x;
+
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
+            ui_draw_cell(
+                row + y,
+                column + x,
+                character,
+                attribute
+            );
+        }
+    }
+}

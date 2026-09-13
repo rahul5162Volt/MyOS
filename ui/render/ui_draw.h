@@ -13,4 +13,13 @@ void ui_draw_cell(
     unsigned char attribute
 );
 
+void ui_draw_fill_rect(
+    unsigned int row,
+    unsigned int column,
+    unsigned int width,
+    unsigned int height,
+    char character,
+    unsigned char attribute
+);
+
 #endif
