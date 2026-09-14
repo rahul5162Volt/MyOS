@@ -1,9 +1,9 @@
-#ifndef FRAMEBUFFER_H
-#define FRAMEBUFFER_H
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include <stdint.h>
 
-void framebuffer_init(
+void renderer_init(
     uint32_t address,
     uint16_t pitch,
     uint16_t width,
@@ -11,15 +11,9 @@ void framebuffer_init(
     uint8_t bpp
 );
 
-void framebuffer_clear(uint32_t color);
+void renderer_clear(uint32_t color);
 
-void framebuffer_put_pixel(
-    uint16_t x,
-    uint16_t y,
-    uint32_t color
-);
-
-void framebuffer_fill_rect(
+void renderer_fill_rect(
     uint16_t x,
     uint16_t y,
     uint16_t width,
@@ -27,7 +21,7 @@ void framebuffer_fill_rect(
     uint32_t color
 );
 
-void framebuffer_draw_rect(
+void renderer_draw_rect(
     uint16_t x,
     uint16_t y,
     uint16_t width,
@@ -35,7 +29,7 @@ void framebuffer_draw_rect(
     uint32_t color
 );
 
-void framebuffer_draw_line(
+void renderer_draw_line(
     uint16_t x1,
     uint16_t y1,
     uint16_t x2,
@@ -43,10 +37,27 @@ void framebuffer_draw_line(
     uint32_t color
 );
 
-void framebuffer_fill_circle(
+void renderer_fill_circle(
     uint16_t center_x,
     uint16_t center_y,
     uint16_t radius,
+    uint32_t color
+);
+
+void renderer_draw_circle(
+    uint16_t center_x,
+    uint16_t center_y,
+    uint16_t radius,
+    uint32_t color
+);
+
+void renderer_fill_triangle(
+    uint16_t x1,
+    uint16_t y1,
+    uint16_t x2,
+    uint16_t y2,
+    uint16_t x3,
+    uint16_t y3,
     uint32_t color
 );
 

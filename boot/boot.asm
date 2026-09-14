@@ -2,8 +2,10 @@
 
 bits 16
 
+%include "memory.inc"
+
 %ifndef STAGE2_SECTORS
-%define STAGE2_SECTORS 1
+%define STAGE2_SECTORS 4
 %endif
 
 start:
@@ -42,7 +44,7 @@ start:
 
     jc disk_error
 
-    mov [0x7DF0], dl
+    mov [BOOT_DRIVE_ADDRESS], dl
 
     jmp 0x0800:0x0000
 

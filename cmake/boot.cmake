@@ -8,9 +8,11 @@ add_custom_command(
     OUTPUT ${BOOT_BIN}
 
     COMMAND nasm
-            -f bin
-            ${MYOS_ROOT}/boot/boot.asm
-            -o ${BOOT_BIN}
+        -D STAGE2_SECTORS=${STAGE2_SECTORS}
+        -I${MYOS_ROOT}/boot/
+        -f bin
+        ${MYOS_ROOT}/boot/boot.asm
+        -o ${BOOT_BIN}
 
     DEPENDS
         ${MYOS_ROOT}/boot/boot.asm

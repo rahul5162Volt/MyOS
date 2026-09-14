@@ -1,9 +1,9 @@
 %ifndef KERNEL_SECTORS
-%define KERNEL_SECTORS 8
+%define KERNEL_SECTORS 32
 %endif
 
 %ifndef STAGE2_SECTORS
-%define STAGE2_SECTORS 1
+%define STAGE2_SECTORS 4
 %endif
 
 %define KERNEL_START_SECTOR (2 + STAGE2_SECTORS)
@@ -12,52 +12,58 @@
 
 bits 16
 
-%include "vbe.asm"
+%include "memory.inc"
+%include "vbe.inc"
+
+
+; ================================================================
+; Stage 2 entry
+; ================================================================
 
 start:
     cli
 
     xor ax, ax
     mov ds, ax
+    mov ss, ax
+    mov sp, REAL_MODE_STACK
 
     call vbe_init
 
-    ; Load kernel to physical address 0x10000.
-    mov ax, 0x1000
-    mov es, ax
-    xor bx, bx
+    ; Copy VBE information to the kernel video_info structure
+    mov ax, [vbe_pitch]
+    mov [VIDEO_INFO_ADDRESS], ax
 
-    mov dl, [0x7DF0]
+    mov ax, [vbe_width]
+    mov [VIDEO_INFO_ADDRESS + 2], ax
 
-    mov ah, 0x02
-    mov al, KERNEL_SECTORS
-    mov ch, 0
-    mov cl, KERNEL_START_SECTOR
-    mov dh, 0
-    int 0x13
-    jc disk_fail
+    mov ax, [vbe_height]
+    mov [VIDEO_INFO_ADDRESS + 4], ax
 
-    ; Enable A20.
+    mov al, [vbe_bpp]
+    mov [VIDEO_INFO_ADDRESS + 6], al
+
+    mov eax, [vbe_framebuffer]
+    mov [VIDEO_INFO_ADDRESS + 8], eax
+
+    call disk_load_kernel
+
     in al, 0x92
-    or al, 2
+    or al, 0x02
     out 0x92, al
 
-    ; Load the protected-mode GDT.
     lgdt [gdt_descriptor]
 
-    ; Enable protected mode.
     mov eax, cr0
-    or eax, 1
+    or eax, 0x01
     mov cr0, eax
 
     jmp dword 0x08:protected_mode
 
-disk_fail:
-    cli
 
-.disk_hang:
-    hlt
-    jmp .disk_hang
+; ================================================================
+; Protected mode
+; ================================================================
 
 bits 32
 
@@ -69,33 +75,24 @@ protected_mode:
     mov gs, ax
     mov ss, ax
 
-    mov esp, 0x90000
+    mov esp, PROTECTED_MODE_STACK
     cld
+    
+    ; ------------------------------------------------------------
+    ; Jump to kernel
+    ; ------------------------------------------------------------
 
-    ; Kernel entry is linked and loaded at 0x10000.
+    jmp 0x10000
 
-    mov ax, [vbe_pitch]
-    mov [0x9000], ax
 
-    mov ax, [vbe_width]
-    mov [0x9002], ax
-
-    mov ax, [vbe_height]
-    mov [0x9004], ax
-
-    mov al, [vbe_bpp]
-    mov [0x9006], al
-
-    mov eax, [vbe_framebuffer]
-    mov [0x9008], eax
-
-    mov eax, 0x10000
-    jmp eax
+; ================================================================
+; GDT
+; ================================================================
 
 gdt_start:
     dq 0
 
-    ; Code segment: base 0, limit 4 GiB.
+    ; Code segment
     dw 0xFFFF
     dw 0x0000
     db 0x00
@@ -103,7 +100,7 @@ gdt_start:
     db 11001111b
     db 0x00
 
-    ; Data segment: base 0, limit 4 GiB.
+    ; Data segment
     dw 0xFFFF
     dw 0x0000
     db 0x00
@@ -116,3 +113,11 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
+
+
+; ================================================================
+; Stage 2 modules
+; ================================================================
+
+%include "vbe.asm"
+%include "disk.asm"
