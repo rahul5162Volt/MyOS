@@ -10,7 +10,7 @@ void kernel_main(void)
 {
     video_info_t* video =
         (video_info_t*)VIDEO_INFO_ADDRESS;
-    
+
     framebuffer_init(
         video->framebuffer,
         video->pitch,
@@ -19,38 +19,14 @@ void kernel_main(void)
         video->bpp
     );
 
-    __asm__ volatile (
-        "mov %0, %%eax\n"
-        "ud2\n"
-        :
-        : "m"(video->framebuffer)
-        : "eax"
-    );
-    
-    ui_init();
-
-    vga_clear();
-    vga_disable_cursor();
-    fs_init();
-    editor_init();
-
-    ui_render();
+    framebuffer_put_pixel(0, 0, 0x00FF0000);
+    framebuffer_put_pixel(1, 0, 0x00FF0000);
+    framebuffer_put_pixel(2, 0, 0x00FF0000);
+    framebuffer_put_pixel(3, 0, 0x00FF0000);
+    framebuffer_put_pixel(4, 0, 0x00FF0000);
 
     while (1)
     {
-        if (keyboard_has_data())
-        {
-            unsigned char scancode;
-
-            scancode = keyboard_read_scancode();
-
-            keyboard_update_state(scancode);
-
-            if (!keyboard_is_release(scancode))
-            {
-                editor_handle_key(scancode);
-                ui_render();
-            }
-        }
+        __asm__ volatile ("hlt");
     }
 }
