@@ -1,29 +1,21 @@
-#ifndef FONT_H
-#define FONT_H
+#ifndef FONT_LAYOUT_H
+#define FONT_LAYOUT_H
 
 #include <stdint.h>
-#include "font_layout.h"
 
-void font_draw_char(
-    uint16_t x,
-    uint16_t y,
-    char character,
-    uint32_t color
-);
+#define FONT_ALIGN_LEFT    0
+#define FONT_ALIGN_CENTER  1
+#define FONT_ALIGN_RIGHT   2
+
+#define FONT_ALIGN_TOP     0
+#define FONT_ALIGN_MIDDLE  1
+#define FONT_ALIGN_BOTTOM  2
 
 void font_draw_string(
     uint16_t x,
     uint16_t y,
     const char* text,
     uint32_t color
-);
-
-void font_draw_char_scaled(
-    uint16_t x,
-    uint16_t y,
-    char character,
-    uint32_t color,
-    uint8_t scale
 );
 
 void font_draw_string_scaled(

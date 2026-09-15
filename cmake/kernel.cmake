@@ -8,6 +8,9 @@ set(KERNEL_SOURCES
     ${MYOS_ROOT}/kernel/video/framebuffer.c
     ${MYOS_ROOT}/kernel/video/renderer.c
     ${MYOS_ROOT}/kernel/video/font.c
+    ${MYOS_ROOT}/kernel/video/font_render.c
+    ${MYOS_ROOT}/kernel/video/font_layout.c
+    ${MYOS_ROOT}/kernel/video/font_align.c
 
     ${DRIVER_SOURCES}
     ${FILESYSTEM_SOURCES}
