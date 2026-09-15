@@ -1,5 +1,6 @@
 #include "video/renderer.h"
 #include "video/video_info.h"
+#include "video/font.h"
 
 void kernel_main(void)
 {
@@ -62,6 +63,31 @@ void kernel_main(void)
         674,
         500,
         0x0000FFFF
+    );
+
+    uint16_t text_width;
+    uint16_t text_height;
+
+    text_width = font_string_width(
+        "Hello, MyOS!",
+        3
+    );
+
+    text_height = font_string_height(
+        "Hello, MyOS!",
+        3
+    );
+
+    font_draw_string_in_rect(
+        200,
+        250,
+        624,
+        200,
+        "Hello, MyOS!",
+        0x00FFFFFF,
+        3,
+        FONT_ALIGN_CENTER,
+        FONT_ALIGN_MIDDLE
     );
 
     while (1)

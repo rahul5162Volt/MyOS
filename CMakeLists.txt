@@ -25,8 +25,8 @@ set(MYOS_BUILD ${CMAKE_BINARY_DIR})
 # --------------------------------------------------
 
 set(STAGE2_SECTORS 4)
-set(KERNEL_SECTORS 32)
-set(KERNEL_BYTES 16384)
+set(KERNEL_SECTORS 40)
+set(KERNEL_BYTES 20480)
 set(OS_IMAGE_SIZE 1474560)
 
 # --------------------------------------------------

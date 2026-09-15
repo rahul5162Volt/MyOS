@@ -7,6 +7,7 @@ set(KERNEL_SOURCES
     ${MYOS_ROOT}/kernel/io/io.c
     ${MYOS_ROOT}/kernel/video/framebuffer.c
     ${MYOS_ROOT}/kernel/video/renderer.c
+    ${MYOS_ROOT}/kernel/video/font.c
 
     ${DRIVER_SOURCES}
     ${FILESYSTEM_SOURCES}
