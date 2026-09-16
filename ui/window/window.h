@@ -1,18 +1,20 @@
 #ifndef UI_WINDOW_H
 #define UI_WINDOW_H
 
+#include "ui_color.h"
+
 typedef struct
 {
     unsigned int row;
     unsigned int column;
-
     unsigned int width;
     unsigned int height;
 
     const char* title;
 
-    unsigned char border_attribute;
-    unsigned char title_attribute;
+    ui_color_t border_color;
+    ui_color_t title_color;
+
 } UI_Window;
 
 void ui_window_init(
@@ -21,7 +23,9 @@ void ui_window_init(
     unsigned int column,
     unsigned int width,
     unsigned int height,
-    const char* title
+    const char* title,
+    ui_color_t border_color,
+    ui_color_t title_color
 );
 
 void ui_window_render(

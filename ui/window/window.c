@@ -1,16 +1,15 @@
 #include "window.h"
 #include "ui_draw.h"
 
-#define UI_WINDOW_BORDER_ATTRIBUTE 0x07
-#define UI_WINDOW_TITLE_ATTRIBUTE  0x70
-
 void ui_window_init(
     UI_Window* window,
     unsigned int row,
     unsigned int column,
     unsigned int width,
     unsigned int height,
-    const char* title
+    const char* title,
+    ui_color_t border_color,
+    ui_color_t title_color
 )
 {
     window->row = row;
@@ -21,11 +20,8 @@ void ui_window_init(
 
     window->title = title;
 
-    window->border_attribute =
-        UI_WINDOW_BORDER_ATTRIBUTE;
-
-    window->title_attribute =
-        UI_WINDOW_TITLE_ATTRIBUTE;
+    window->border_color = border_color;
+    window->title_color = title_color;
 }
 
 void ui_window_render(
@@ -56,7 +52,7 @@ void ui_window_render(
             row,
             column,
             '-',
-            window->border_attribute
+            window->border_color
         );
 
         column++;
@@ -80,7 +76,7 @@ void ui_window_render(
             row,
             column,
             '-',
-            window->border_attribute
+            window->border_color
         );
 
         column++;
@@ -99,7 +95,7 @@ void ui_window_render(
             row,
             window->column,
             '|',
-            window->border_attribute
+            window->border_color
         );
 
         ui_draw_cell(
@@ -108,7 +104,7 @@ void ui_window_render(
                 window->width -
                 1,
             '|',
-            window->border_attribute
+            window->border_color
         );
 
         row++;
@@ -134,7 +130,7 @@ void ui_window_render(
                 window->row,
                 column,
                 *title,
-                window->title_attribute
+                window->title_color
             );
 
             title++;

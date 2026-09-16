@@ -12,4 +12,5 @@ set(UI_SOURCES
     ${MYOS_ROOT}/ui/render/ui_backend.c
     ${MYOS_ROOT}/ui/render/ui_draw.c
     ${MYOS_ROOT}/ui/render/render.c
+    ${MYOS_ROOT}/ui/render/ui_framebuffer_backend.c
 )

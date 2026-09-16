@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "font_layout.h"
 
+#define FONT_CELL_WIDTH  6
+#define FONT_CELL_HEIGHT 8
+
 void font_draw_char(
     uint16_t x,
     uint16_t y,

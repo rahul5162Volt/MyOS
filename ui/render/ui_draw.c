@@ -1,5 +1,21 @@
 #include "ui_draw.h"
 #include "ui_backend.h"
+#include "ui_framebuffer_backend.h"
+
+unsigned int ui_draw_get_width(void)
+{
+    return ui_framebuffer_backend_get_width();
+}
+
+unsigned int ui_draw_get_height(void)
+{
+    return ui_framebuffer_backend_get_height();
+}
+
+void ui_draw_init(void)
+{
+    ui_backend_init();
+}
 
 void ui_draw_clear(void)
 {
@@ -10,14 +26,14 @@ void ui_draw_cell(
     unsigned int row,
     unsigned int column,
     char character,
-    unsigned char attribute
+    ui_color_t color
 )
 {
     ui_backend_draw_cell(
         row,
         column,
         character,
-        attribute
+        color
     );
 }
 
@@ -27,7 +43,7 @@ void ui_draw_fill_rect(
     unsigned int width,
     unsigned int height,
     char character,
-    unsigned char attribute
+    ui_color_t color
 )
 {
     unsigned int y;
@@ -41,7 +57,7 @@ void ui_draw_fill_rect(
                 row + y,
                 column + x,
                 character,
-                attribute
+                color
             );
         }
     }

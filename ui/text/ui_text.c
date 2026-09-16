@@ -6,16 +6,13 @@ void ui_text_init(
     unsigned int row,
     unsigned int column,
     const char* value,
-    unsigned char attribute
+    ui_color_t color
 )
 {
     text->row = row;
     text->column = column;
-
     text->text = value;
-
-    text->attribute = attribute;
-
+    text->color = color;
     text->visible = 1;
 }
 
@@ -40,13 +37,13 @@ void ui_text_render(
     }
 
     while (*value != '\0' &&
-           column < UI_DRAW_WIDTH)
+           column < ui_draw_get_width())
     {
         ui_draw_cell(
             text->row,
             column,
             *value,
-            text->attribute
+            text->color
         );
 
         column++;

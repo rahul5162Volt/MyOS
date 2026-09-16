@@ -7,16 +7,17 @@ void ui_panel_init(
     unsigned int column,
     unsigned int width,
     unsigned int height,
-    unsigned char attribute
+    char character,
+    ui_color_t color
 )
 {
     panel->row = row;
     panel->column = column;
-
     panel->width = width;
     panel->height = height;
 
-    panel->attribute = attribute;
+    panel->character = character;
+    panel->color = color;
 
     panel->visible = 1;
 }
@@ -46,8 +47,8 @@ void ui_panel_render(
             ui_draw_cell(
                 row,
                 column,
-                ' ',
-                panel->attribute
+                panel->character,
+                panel->color
             );
 
             column++;

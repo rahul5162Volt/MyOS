@@ -1,22 +1,27 @@
 #include "ui_backend.h"
-#include "vga.h"
+#include "ui_framebuffer_backend.h"
+
+void ui_backend_init(void)
+{
+    ui_framebuffer_backend_init();
+}
 
 void ui_backend_clear(void)
 {
-    vga_clear();
+    ui_framebuffer_backend_clear();
 }
 
 void ui_backend_draw_cell(
     unsigned int row,
     unsigned int column,
     char character,
-    unsigned char attribute
+    ui_color_t color
 )
 {
-    vga_write_cell(
+    ui_framebuffer_backend_draw_cell(
         row,
         column,
         character,
-        attribute
+        color
     );
 }

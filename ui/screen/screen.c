@@ -4,8 +4,29 @@
 #include "ui_text.h"
 #include "ui_draw.h"
 
-#define UI_HEADER_ATTRIBUTE 0x1F
-#define UI_STATUS_ATTRIBUTE 0x07
+#define UI_HEADER_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00FFFFFF, \
+        .background = 0x000000FF \
+    }
+
+#define UI_STATUS_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00FFFFFF, \
+        .background = 0x00000000 \
+    }
+
+#define UI_WINDOW_BORDER_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00FFFFFF, \
+        .background = 0x00000000 \
+    }
+
+#define UI_WINDOW_TITLE_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00000000, \
+        .background = 0x00FFFFFF \
+    }
 
 static UI_Panel header_panel;
 static UI_Window editor_window;
@@ -17,31 +38,37 @@ static UI_Text status_text;
 
 void ui_screen_init(void)
 {
+    ui_draw_init();
+
     ui_panel_init(
         &header_panel,
         0,
         0,
-        UI_DRAW_WIDTH,
+        ui_draw_get_width(),
         1,
-        UI_HEADER_ATTRIBUTE
+        ' ',
+        UI_HEADER_COLOR
     );
 
     ui_window_init(
         &editor_window,
         3,
         2,
-        UI_DRAW_WIDTH - 4,
-        UI_DRAW_HEIGHT - 6,
-        "Editor"
+        ui_draw_get_width() - 4,
+        ui_draw_get_height() - 6,
+        "Editor",
+        UI_WINDOW_BORDER_COLOR,
+        UI_WINDOW_TITLE_COLOR
     );
 
     ui_panel_init(
         &status_panel,
-        UI_DRAW_HEIGHT - 1,
+        ui_draw_get_height() - 1,
         0,
-        UI_DRAW_WIDTH,
+        ui_draw_get_width(),
         1,
-        UI_STATUS_ATTRIBUTE
+        ' ',
+        UI_STATUS_COLOR
     );
 
     ui_text_init(
@@ -49,23 +76,23 @@ void ui_screen_init(void)
         0,
         0,
         "MyOS",
-        UI_HEADER_ATTRIBUTE
+        UI_HEADER_COLOR
     );
 
     ui_text_init(
         &header_version,
         0,
-        UI_DRAW_WIDTH - 4,
+        ui_draw_get_width() - 4,
         "v0.1",
-        UI_HEADER_ATTRIBUTE
+        UI_HEADER_COLOR
     );
 
     ui_text_init(
         &status_text,
-        UI_DRAW_HEIGHT - 1,
+        ui_draw_get_height() - 1,
         0,
         "Ready",
-        UI_STATUS_ATTRIBUTE
+        UI_STATUS_COLOR
     );
 }
 
