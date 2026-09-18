@@ -2,10 +2,25 @@
 #include "editor_text.h"
 #include "lines.h"
 #include "selection.h"
-#include "vga.h"
+#include "ui_draw.h"
 
-#define VGA_SELECTION_ATTRIBUTE 0x70
-#define VGA_CURSOR_ATTRIBUTE    0x1F
+#define EDITOR_DEFAULT_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00FFFFFF, \
+        .background = 0x00000000 \
+    }
+
+#define EDITOR_SELECTION_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00000000, \
+        .background = 0x00FFFFFF \
+    }
+
+#define EDITOR_CURSOR_COLOR \
+    (ui_color_t){ \
+        .foreground = 0x00FFFFFF, \
+        .background = 0x0000FF00 \
+    }
 
 void editor_render(
     unsigned int row,
@@ -27,7 +42,7 @@ void editor_render(
         while (screen_column < width)
         {
             char character = ' ';
-            unsigned char attribute;
+            ui_color_t color;
 
             if (screen_column < length)
             {
@@ -41,27 +56,24 @@ void editor_render(
             if (logical_row == editor_cursor_row &&
                 screen_column == editor_cursor_column)
             {
-                attribute =
-                    VGA_CURSOR_ATTRIBUTE;
+                color = EDITOR_CURSOR_COLOR;
             }
             else if (editor_selection_contains(
-                        logical_row,
-                        screen_column))
+                         logical_row,
+                         screen_column))
             {
-                attribute =
-                    VGA_SELECTION_ATTRIBUTE;
+                color = EDITOR_SELECTION_COLOR;
             }
             else
             {
-                attribute =
-                    VGA_DEFAULT_ATTRIBUTE;
+                color = EDITOR_DEFAULT_COLOR;
             }
 
-            vga_write_cell(
+            ui_draw_cell(
                 row + screen_row,
                 column + screen_column,
                 character,
-                attribute
+                color
             );
 
             screen_column++;
@@ -77,11 +89,11 @@ void editor_render(
 
         while (screen_column < width)
         {
-            vga_write_cell(
+            ui_draw_cell(
                 row + screen_row,
                 column + screen_column,
                 ' ',
-                VGA_DEFAULT_ATTRIBUTE
+                EDITOR_DEFAULT_COLOR
             );
 
             screen_column++;

@@ -24,6 +24,8 @@ add_library(kernel_objects OBJECT
     ${KERNEL_SOURCES}
     ${EDITOR_SOURCES}
     ${UI_SOURCES}
+    ${UI_TEST_SOURCES}
+    ${OS_SOURCES}
 )
 
 # --------------------------------------------------
@@ -54,6 +56,7 @@ add_library(kernel_entry OBJECT
 add_executable(kernel.elf
     $<TARGET_OBJECTS:kernel_entry>
     $<TARGET_OBJECTS:kernel_objects>
+    $<TARGET_OBJECTS:app_objects>
 )
 
 set_target_properties(kernel.elf PROPERTIES
