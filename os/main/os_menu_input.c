@@ -21,13 +21,13 @@ void os_menu_input_run(void)
             {
                 if (key == '1')
                 {
-                    os_application_manager_run_editor();
+                    application_manager_run_editor();
                     return;
                 }
 
                 if (key == '2')
                 {
-                    os_application_manager_run_calculator();
+                    application_manager_run_calculator();
                     return;
                 }
             }

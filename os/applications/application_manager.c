@@ -5,14 +5,14 @@
 #include "editor/editor.h"
 #include "calculator/calculator.h"
 
-void os_application_manager_run_editor(void)
+void application_manager_run_editor(void)
 {
     application_clear_exit();
 
     editor_run();
 }
 
-void os_application_manager_run_calculator(void)
+void application_manager_run_calculator(void)
 {
     application_clear_exit();
 
