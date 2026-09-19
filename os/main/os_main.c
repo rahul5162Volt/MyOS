@@ -1,8 +1,8 @@
 #include "os_main.h"
 
-#include "os_menu.h"
+#include "os_main_loop.h"
 
 void os_main_run(void)
 {
-    os_menu_run();
+    os_main_loop_run();
 }
