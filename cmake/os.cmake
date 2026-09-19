@@ -4,6 +4,8 @@
 
 set(OS_SOURCES
     ${MYOS_ROOT}/os/startup/os_startup.c
+    ${MYOS_ROOT}/os/startup/os_startup_screen.c
+    ${MYOS_ROOT}/os/startup/os_startup_wait.c
     ${MYOS_ROOT}/os/main/os_main.c
     ${MYOS_ROOT}/os/applications/application_manager.c
     ${MYOS_ROOT}/os/applications/application_runtime.c
