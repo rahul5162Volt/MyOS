@@ -16,41 +16,50 @@
     .background = 0x00FFFFFF \
 }
 
+#define OS_MENU_TITLE_ROW       5
+#define OS_MENU_TITLE_COLUMN    10
+
+#define OS_MENU_EDITOR_ROW      7
+#define OS_MENU_CALCULATOR_ROW  8
+
+#define OS_MENU_KEY_COLUMN      10
+#define OS_MENU_LABEL_COLUMN    12
+
 static void os_menu_draw(void)
 {
     ui_draw_clear();
 
     ui_draw_string(
-        5,
-        10,
+        OS_MENU_TITLE_ROW,
+        OS_MENU_TITLE_COLUMN,
         "MAIN",
         OS_MENU_NORMAL_COLOR
     );
 
     ui_draw_cell(
-        7,
-        10,
+        OS_MENU_EDITOR_ROW,
+        OS_MENU_KEY_COLUMN,
         '1',
         OS_MENU_SELECTED_COLOR
     );
 
     ui_draw_string(
-        7,
-        12,
+        OS_MENU_EDITOR_ROW,
+        OS_MENU_LABEL_COLUMN,
         "Editor",
         OS_MENU_NORMAL_COLOR
     );
 
     ui_draw_cell(
-        8,
-        10,
+        OS_MENU_CALCULATOR_ROW,
+        OS_MENU_KEY_COLUMN,
         '2',
         OS_MENU_SELECTED_COLOR
     );
 
     ui_draw_string(
-        8,
-        12,
+        OS_MENU_CALCULATOR_ROW,
+        OS_MENU_LABEL_COLUMN,
         "Calculator",
         OS_MENU_NORMAL_COLOR
     );
