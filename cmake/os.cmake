@@ -5,9 +5,13 @@
 set(OS_SOURCES
     ${MYOS_ROOT}/os/startup/os_startup.c
     ${MYOS_ROOT}/os/startup/os_startup_screen.c
+    
     ${MYOS_ROOT}/os/main/os_main.c
     ${MYOS_ROOT}/os/main/os_main_loop.c
+    ${MYOS_ROOT}/os/main/os_menu.c
+    ${MYOS_ROOT}/os/main/os_menu_screen.c
+    ${MYOS_ROOT}/os/main/os_menu_input.c
+
     ${MYOS_ROOT}/os/applications/application_manager.c
     ${MYOS_ROOT}/os/applications/application_runtime.c
-    ${MYOS_ROOT}/os/main/os_menu.c
 )
