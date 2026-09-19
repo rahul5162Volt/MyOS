@@ -1,11 +1,28 @@
+#include "kernel.h"
+
+#include "kernel_panic.h"
+#include "kernel_status.h"
+
+#include "memory.h"
+#include "memory_map.h"
+
 #include "os_startup.h"
+
+static kernel_status_t kernel_initialize(void)
+{
+    memory_initialize_from_bootloader();
+
+    return KERNEL_STATUS_OK;
+}
 
 void kernel_main(void)
 {
-    os_startup_run();
+    kernel_status_t status = kernel_initialize();
 
-    while (1)
+    if (status != KERNEL_STATUS_OK)
     {
-        __asm__ volatile ("hlt");
+        kernel_panic();
     }
+
+    os_startup_run();
 }

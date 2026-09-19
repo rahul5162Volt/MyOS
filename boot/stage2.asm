@@ -29,6 +29,7 @@ start:
     mov sp, REAL_MODE_STACK
 
     call vbe_init
+    call memory_map_detect
 
     ; Copy VBE information to the kernel video_info structure
     mov ax, [vbe_pitch]
@@ -121,3 +122,4 @@ gdt_descriptor:
 
 %include "vbe.asm"
 %include "disk.asm"
+%include "memory_map.asm"

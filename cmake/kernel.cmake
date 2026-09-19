@@ -3,17 +3,23 @@
 # --------------------------------------------------
 
 set(KERNEL_SOURCES
-    ${MYOS_ROOT}/kernel/kernel.c
-    ${MYOS_ROOT}/kernel/io/io.c
-    ${MYOS_ROOT}/kernel/video/framebuffer.c
-    ${MYOS_ROOT}/kernel/video/renderer.c
-    ${MYOS_ROOT}/kernel/video/font.c
-    ${MYOS_ROOT}/kernel/video/font_render.c
-    ${MYOS_ROOT}/kernel/video/font_layout.c
-    ${MYOS_ROOT}/kernel/video/font_align.c
+${MYOS_ROOT}/kernel/kernel.c
+${MYOS_ROOT}/kernel/kernel_panic.c
 
-    ${DRIVER_SOURCES}
-    ${FILESYSTEM_SOURCES}
+${MYOS_ROOT}/kernel/memory/memory.c
+
+${MYOS_ROOT}/hardware/io/io.c
+${MYOS_ROOT}/hardware/video/framebuffer.c
+
+${MYOS_ROOT}/graphics/renderer.c
+
+${MYOS_ROOT}/ui/font/font.c
+${MYOS_ROOT}/ui/font/font_render.c
+${MYOS_ROOT}/ui/font/font_layout.c
+${MYOS_ROOT}/ui/font/font_align.c
+
+${DRIVER_SOURCES}
+${FILESYSTEM_SOURCES}
 )
 
 # --------------------------------------------------

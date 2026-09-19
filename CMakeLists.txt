@@ -39,7 +39,12 @@ include_directories(
     ${MYOS_ROOT}/drivers/keyboard
 
     ${MYOS_ROOT}/kernel
-    ${MYOS_ROOT}/kernel/io
+    ${MYOS_ROOT}/kernel/memory
+
+    ${MYOS_ROOT}/hardware/io
+    ${MYOS_ROOT}/hardware/video
+
+    ${MYOS_ROOT}/graphics
 
     ${MYOS_ROOT}/filesystem
     ${MYOS_ROOT}/filesystem/core
@@ -65,6 +70,7 @@ include_directories(
     ${MYOS_ROOT}/ui/layout
     ${MYOS_ROOT}/ui/text
     ${MYOS_ROOT}/ui/render
+    ${MYOS_ROOT}/ui/font
 
     ${MYOS_ROOT}/tests/integration/ui
 
