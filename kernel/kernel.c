@@ -1,97 +1,28 @@
-#include "video/renderer.h"
-#include "video/video_info.h"
-#include "video/font.h"
+#include "kernel.h"
+
+#include "kernel_panic.h"
+#include "kernel_status.h"
+
+#include "memory.h"
+#include "memory_map.h"
+
+#include "os_startup.h"
+
+static kernel_status_t kernel_initialize(void)
+{
+    memory_initialize_from_bootloader();
+
+    return KERNEL_STATUS_OK;
+}
 
 void kernel_main(void)
 {
-    video_info_t* video =
-        (video_info_t*)VIDEO_INFO_ADDRESS;
+    kernel_status_t status = kernel_initialize();
 
-    renderer_init(
-        video->framebuffer,
-        video->pitch,
-        video->width,
-        video->height,
-        video->bpp
-    );
-
-    renderer_clear(0x00000000);
-
-    renderer_fill_rect(
-        100,
-        100,
-        300,
-        150,
-        0x00FF0000
-    );
-
-    renderer_draw_rect(
-        500,
-        100,
-        300,
-        150,
-        0x0000FF00
-    );
-
-    renderer_draw_line(
-        100,
-        400,
-        900,
-        600,
-        0x000000FF
-    );
-
-    renderer_fill_circle(
-        512,
-        384,
-        100,
-        0x00FFFF00
-    );
-
-    renderer_draw_circle(
-        512,
-        384,
-        160,
-        0x00FFFFFF
-    );
-
-    renderer_fill_triangle(
-        350,
-        500,
-        512,
-        300,
-        674,
-        500,
-        0x0000FFFF
-    );
-
-    uint16_t text_width;
-    uint16_t text_height;
-
-    text_width = font_string_width(
-        "Hello, MyOS!",
-        3
-    );
-
-    text_height = font_string_height(
-        "Hello, MyOS!",
-        3
-    );
-
-    font_draw_string_in_rect(
-        200,
-        250,
-        624,
-        200,
-        "Hello, MyOS!",
-        0x00FFFFFF,
-        3,
-        FONT_ALIGN_CENTER,
-        FONT_ALIGN_MIDDLE
-    );
-
-    while (1)
+    if (status != KERNEL_STATUS_OK)
     {
-        __asm__ volatile ("hlt");
+        kernel_panic();
     }
+
+    os_startup_run();
 }

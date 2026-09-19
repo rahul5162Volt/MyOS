@@ -23,4 +23,9 @@
 
 %define BOOT_DRIVE_ADDRESS        0x7DF0
 
+; BIOS E820 memory map
+%define MEMORY_MAP_ADDRESS       0xA000
+%define MEMORY_MAP_MAX_ENTRIES   32
+%define MEMORY_MAP_COUNT_ADDRESS 0xAFF0
+
 %endif

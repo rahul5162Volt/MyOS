@@ -25,8 +25,8 @@ set(MYOS_BUILD ${CMAKE_BINARY_DIR})
 # --------------------------------------------------
 
 set(STAGE2_SECTORS 4)
-set(KERNEL_SECTORS 40)
-set(KERNEL_BYTES 20480)
+set(KERNEL_SECTORS 64)
+set(KERNEL_BYTES 32768)
 set(OS_IMAGE_SIZE 1474560)
 
 # --------------------------------------------------
@@ -39,7 +39,12 @@ include_directories(
     ${MYOS_ROOT}/drivers/keyboard
 
     ${MYOS_ROOT}/kernel
-    ${MYOS_ROOT}/kernel/io
+    ${MYOS_ROOT}/kernel/memory
+
+    ${MYOS_ROOT}/hardware/io
+    ${MYOS_ROOT}/hardware/video
+
+    ${MYOS_ROOT}/graphics
 
     ${MYOS_ROOT}/filesystem
     ${MYOS_ROOT}/filesystem/core
@@ -65,6 +70,16 @@ include_directories(
     ${MYOS_ROOT}/ui/layout
     ${MYOS_ROOT}/ui/text
     ${MYOS_ROOT}/ui/render
+    ${MYOS_ROOT}/ui/font
+
+    ${MYOS_ROOT}/tests/integration/ui
+
+    ${MYOS_ROOT}/os
+    ${MYOS_ROOT}/os/startup
+    ${MYOS_ROOT}/os/main
+    ${MYOS_ROOT}/os/applications
+    
+    ${MYOS_ROOT}/apps
 )
 
 # --------------------------------------------------
@@ -75,8 +90,11 @@ include(${MYOS_ROOT}/cmake/drivers.cmake)
 include(${MYOS_ROOT}/cmake/filesystem.cmake)
 include(${MYOS_ROOT}/cmake/editor.cmake)
 include(${MYOS_ROOT}/cmake/ui.cmake)
+include(${MYOS_ROOT}/cmake/ui_tests.cmake)
+include(${MYOS_ROOT}/cmake/os.cmake)
 include(${MYOS_ROOT}/cmake/kernel.cmake)
 include(${MYOS_ROOT}/cmake/boot.cmake)
+include(${MYOS_ROOT}/cmake/apps.cmake)
 
 # --------------------------------------------------
 # OS image

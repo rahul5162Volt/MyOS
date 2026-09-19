@@ -37,6 +37,28 @@ void ui_draw_cell(
     );
 }
 
+void ui_draw_string(
+    unsigned int row,
+    unsigned int column,
+    const char* text,
+    ui_color_t color
+)
+{
+    unsigned int offset = 0;
+
+    while (text[offset] != '\0')
+    {
+        ui_draw_cell(
+            row,
+            column + offset,
+            text[offset],
+            color
+        );
+
+        offset++;
+    }
+}
+
 void ui_draw_fill_rect(
     unsigned int row,
     unsigned int column,

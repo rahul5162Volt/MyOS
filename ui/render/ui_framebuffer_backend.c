@@ -1,8 +1,8 @@
 #include "ui_framebuffer_backend.h"
 
-#include "video/font.h"
-#include "video/renderer.h"
-#include "video/video_info.h"
+#include "font.h"
+#include "renderer.h"
+#include "video_info.h"
 
 static unsigned int ui_framebuffer_columns;
 static unsigned int ui_framebuffer_rows;

@@ -26,4 +26,11 @@ void ui_draw_fill_rect(
     ui_color_t color
 );
 
+void ui_draw_string(
+    unsigned int row,
+    unsigned int column,
+    const char* text,
+    ui_color_t color
+);
+
 #endif
