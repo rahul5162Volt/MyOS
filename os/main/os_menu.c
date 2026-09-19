@@ -5,9 +5,6 @@
 
 void os_menu_run(void)
 {
-    while (1)
-    {
-        os_menu_screen_show();
-        os_menu_input_run();
-    }
+    os_menu_screen_show();
+    os_menu_input_run();
 }
