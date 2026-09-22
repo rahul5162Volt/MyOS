@@ -1,0 +1,42 @@
+#ifndef KERNEL_TEST_UI_CONFIG_H
+#define KERNEL_TEST_UI_CONFIG_H
+
+/* Diagnostic screen */
+
+#define KERNEL_TEST_BACKGROUND  0x00141B26
+
+/* Text styles */
+
+#define KERNEL_TEST_TITLE_SCALE      2
+#define KERNEL_TEST_TITLE_COLOR      0x00FFFFFF
+
+#define KERNEL_TEST_SECTION_SCALE    2
+#define KERNEL_TEST_SECTION_COLOR    0x00FFFFFF
+
+#define KERNEL_TEST_LABEL_SCALE      1
+#define KERNEL_TEST_LABEL_COLOR      0x00FFFFFF
+
+#define KERNEL_TEST_VALUE_SCALE      1
+#define KERNEL_TEST_VALUE_PASS_COLOR 0x0000FF00
+#define KERNEL_TEST_VALUE_FAIL_COLOR 0x00FF0000
+
+#define KERNEL_TEST_STATUS_SCALE     2
+#define KERNEL_TEST_STATUS_COLOR     0x00FFFFFF
+
+/* Screen layout */
+
+#define KERNEL_TEST_MARGIN_X             32
+
+#define KERNEL_TEST_TITLE_Y              32
+#define KERNEL_TEST_SECTION_Y            72
+
+#define KERNEL_TEST_TEST_START_Y         120
+#define KERNEL_TEST_TEST_ROW_HEIGHT      48
+
+#define KERNEL_TEST_E820_Y               456
+#define KERNEL_TEST_E820_REGION_Y        504
+#define KERNEL_TEST_E820_REGION_HEIGHT   32
+
+#define KERNEL_TEST_STATUS_Y             704
+
+#endif

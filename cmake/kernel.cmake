@@ -3,16 +3,35 @@
 # --------------------------------------------------
 
 set(KERNEL_SOURCES
+
+# Kernel--------------------------------------------
 ${MYOS_ROOT}/kernel/kernel.c
 ${MYOS_ROOT}/kernel/kernel_panic.c
 
-${MYOS_ROOT}/kernel/memory/memory.c
+${MYOS_ROOT}/kernel/diagnostics/kernel_test.c
 
+${MYOS_ROOT}/kernel/diagnostics/tests/kernel_test_memory.c
+${MYOS_ROOT}/kernel/diagnostics/tests/kernel_test_pmm_advanced.c
+${MYOS_ROOT}/kernel/diagnostics/tests/kernel_test_pmm_basic.c
+${MYOS_ROOT}/kernel/diagnostics/tests/kernel_test_pmm_helpers.c
+
+${MYOS_ROOT}/kernel/diagnostics/ui/kernel_test_ui.c
+${MYOS_ROOT}/kernel/diagnostics/ui/kernel_test_ui_format.c
+
+${MYOS_ROOT}/kernel/memory/memory.c
+${MYOS_ROOT}/kernel/memory/memory_bitmap.c
+${MYOS_ROOT}/kernel/memory/memory_boot.c
+${MYOS_ROOT}/kernel/memory/memory_pmm.c
+${MYOS_ROOT}/kernel/memory/memory_region.c
+
+# Hardware------------------------------------------
 ${MYOS_ROOT}/hardware/io/io.c
 ${MYOS_ROOT}/hardware/video/framebuffer.c
 
+# Graphics------------------------------------------
 ${MYOS_ROOT}/graphics/renderer.c
 
+# UI------------------------------------------------
 ${MYOS_ROOT}/ui/font/font.c
 ${MYOS_ROOT}/ui/font/font_render.c
 ${MYOS_ROOT}/ui/font/font_layout.c
